@@ -73,9 +73,9 @@ function A = createAdjacencyMatrix(n, supplierRange, manufacturerRange, retailer
         end
     end
 
-    % Display neighbors for each connected node
-    for i = 1:n
-        neighbors = find(A(i,:,1)); 
-        fprintf('Node %d has neighbors: %s\n', i, mat2str(neighbors)); 
-    end
+%     % Display neighbors for each connected node
+%     for i = 1:n
+%         neighbors = find(A(i,:,1)); 
+%         fprintf('Node %d has neighbors: %s\n', i, mat2str(neighbors)); 
+%     end
 end

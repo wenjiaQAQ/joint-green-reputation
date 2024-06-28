@@ -1,0 +1,25 @@
+function plotAdjMatrixHeatmap(t)
+    global adjMatrix;
+    global n;
+
+    % Get initialAdjMatrix and finalAdjMatrix
+    initialAdjMatrix = adjMatrix(:, :, 1);
+    finalAdjMatrix = adjMatrix(:, :, end);
+
+    % 绘制第一个时间步的热力图
+    figure;
+    subplot(1, 2, 1);
+    heatmap(initialAdjMatrix);
+    xlabel('Node');
+    ylabel('Node');
+    title('Adjacency Matrix at Time Step 0');
+    colorbar;
+
+    % 绘制最后一个时间步的热力图
+    subplot(1, 2, 2);
+    heatmap(finalAdjMatrix);
+    xlabel('Node');
+    ylabel('Node');
+    title(['Adjacency Matrix at Time Step ', num2str(t)]);
+    colorbar;
+end

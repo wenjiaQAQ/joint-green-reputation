@@ -24,10 +24,10 @@ global steadyState;
 
 
 % Initialize variables
-n = 500;  % {20,500,1000}
+n = 20;  % {20,200,2000}
 t = 500;
 alpha = 0.5;  % {0.2,0.5,0.7}
-K = 0.5;  % {0.25,0.5,0.75}
+K = 0.25;  % {0.25,0.5,0.75}
 % Initialize strategy plan cell array
 strategyPlan = cell(n, 1);
 steadyState = t;

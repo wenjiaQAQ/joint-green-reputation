@@ -1,24 +1,31 @@
-function strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, initialJRValues, n, adjMatrix)
+function strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, n)
 
     global strategyPlan;
+    global dynamicJRUpdate;
+    global adjMatrix;
+
+    currentJRValues = dynamicJRUpdate(:, end);
+    % disp('currentJRValues');
+    % disp(currentJRValues);
+    currentAdjMatrix = adjMatrix(:, :, end);
 
     % Calculate peer average JR for each category
-    supplierAverageJR = mean(initialJRValues(supplierRange));
-    manufacturerAverageJR = mean(initialJRValues(manufacturerRange));
-    retailerAverageJR = mean(initialJRValues(retailerRange));
-    disp('supplierAverageJR:');
-    disp(supplierAverageJR);
-    disp('manufacturerAverageJR:');
-    disp(manufacturerAverageJR);
-    disp('retailerAverageJR:');
-    disp(retailerAverageJR);
+    supplierAverageJR = mean(currentJRValues(supplierRange));
+    manufacturerAverageJR = mean(currentJRValues(manufacturerRange));
+    retailerAverageJR = mean(currentJRValues(retailerRange));
+    % disp('supplierAverageJR:');
+    % disp(supplierAverageJR);
+    % disp('manufacturerAverageJR:');
+    % disp(manufacturerAverageJR);
+    % disp('retailerAverageJR:');
+    % disp(retailerAverageJR);
 
     % Each node's JR, neighbors, #neighbors
     for i = 1:n
-        currentJR = initialJRValues(i);
+        currentJR = currentJRValues(i);
         %disp('CurrentJR');
         %disp(currentJR);
-        neighbors = find(adjMatrix(i, :) == 1);
+        neighbors = find(currentAdjMatrix(i, :) == 1);
         %disp('CurrentJR neighbors');
         %disp(neighbors);
         numNeighbors = length(neighbors);
@@ -53,11 +60,11 @@ function strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, init
                 filteredNeighbors = [];
                 for j = 1:length(potentialNeighbors)
                     neighbor = potentialNeighbors(j);
-                    if ismember(neighbor, supplierRange) && initialJRValues(neighbor) > supplierAverageJR
+                    if ismember(neighbor, supplierRange) && currentJRValues(neighbor) > supplierAverageJR
                         filteredNeighbors = [filteredNeighbors, neighbor];
-                    elseif ismember(neighbor, manufacturerRange) && initialJRValues(neighbor) > manufacturerAverageJR
+                    elseif ismember(neighbor, manufacturerRange) && currentJRValues(neighbor) > manufacturerAverageJR
                         filteredNeighbors = [filteredNeighbors, neighbor];
-                    elseif ismember(neighbor, retailerRange) && initialJRValues(neighbor) > retailerAverageJR
+                    elseif ismember(neighbor, retailerRange) && currentJRValues(neighbor) > retailerAverageJR
                         filteredNeighbors = [filteredNeighbors, neighbor];
                     end
                 end
@@ -75,8 +82,8 @@ function strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, init
                 % Cut neighbor
             elseif numNeighbors >= 5
                 % Find the lowest JR
-                minJR = min(initialJRValues(neighbors));
-                minJRNeighbors = neighbors(initialJRValues(neighbors) == minJR);
+                minJR = min(currentJRValues(neighbors));
+                minJRNeighbors = neighbors(currentJRValues(neighbors) == minJR);
                 % Random choose one if there are multiple
                 neighborToDisconnect = minJRNeighbors(randi(length(minJRNeighbors)));
                 strategyPlan{i} = ['[2, ', num2str(neighborToDisconnect), ']'];

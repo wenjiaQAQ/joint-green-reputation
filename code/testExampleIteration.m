@@ -20,7 +20,7 @@ global dynamicJRUpdate;
 
 
 n = 11;
-t = 10;
+t = 3;
 alpha = 0.2;  % {0.2,0.5,0.7}
 supplierRange = 1:3;
 manufacturerRange = 4:7;
@@ -84,40 +84,38 @@ disp(dynamicJRUpdate);
 
 strategyPlan = cell(n, 1);
 
-for iteration = 1:t
-    fprintf('Iteration %d', t);
+    for iteration = 1:t
+        % First Strategy Plan
+        strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, n);
+        disp(['strategyFirstPlan at iteration ', num2str(iteration), ':']);
+        disp(strategyPlan);
 
-    %First Strategy Plan
-    strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, initialJRValues, n, adjMatrix);
-    disp('strategyFirstPlan:');
-    disp(strategyPlan);
-    
-    % Check Add Success Strategy Plan
-    strategyCheckAddSuccess(supplierRange, manufacturerRange, retailerRange, initialJRValues, initialT2GValues, n, adjMatrix, alpha);
-    disp('strategyCheckAddSuccess:');
-    disp(strategyPlan);
-    
-    % Update Fail Add Strategy Plan (final version)
-    strategyFailAddUpdate(initialJRValues, n, adjMatrix);
-    disp('strategyFailAddUpdate:');
-    disp(strategyPlan);
-    
-    % Update T2G
-    updateT2G();
-    disp('update T2G:');
-    disp(dynamicT2GUpdate);
-    
-    % Update adjMatric
-    updateAdjacencyMatrix();
-    disp('Updated adjacency matrix:');
-    disp(adjMatrix(:, :, end));
-    for i = 1:n
-        neighbors = find(adjMatrix(i, :, end)); 
-        fprintf('Node %d has neighbors: %s\n', i, mat2str(neighbors)); 
+        % Check Add Success Strategy Plan
+        strategyCheckAddSuccess(supplierRange, manufacturerRange, retailerRange, n, alpha);
+        disp(['strategyCheckAddSuccess at iteration ', num2str(iteration), ':']);
+        disp(strategyPlan);
+
+        % Update Fail Add Strategy Plan
+        strategyFailAddUpdate(n);
+        disp(['strategyFailAddUpdate at iteration ', num2str(iteration), ':']);
+        disp(strategyPlan);
+
+        % Update T2G based on the strategy plan
+        updateT2G();
+        disp(['update T2G at iteration ', num2str(iteration), ':']);
+        disp(dynamicT2GUpdate);
+
+        % Update adjacency matrix based on the strategy plan
+        updateAdjacencyMatrix();
+        disp(['Updated adjacency matrix at iteration ', num2str(iteration), ':']);
+        disp(adjMatrix(:, :, end));
+        for i = 1:n
+            neighbors = find(adjMatrix(i, :, end)); 
+            fprintf('Node %d has neighbors at iteration %d: %s\n', i, iteration, mat2str(neighbors)); 
+        end
+
+        % Update JR based on the new adjacency matrix and T2G values
+        updateJR(alpha);
+        disp(['Updated JR values at iteration ', num2str(iteration), ':']);
+        disp(dynamicJRUpdate);
     end
-    
-    % Update JR value
-    updateJR(alpha);
-    disp('Updated JR values:');
-    disp(dynamicJRUpdate);
-end

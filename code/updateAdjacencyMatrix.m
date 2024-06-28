@@ -28,11 +28,11 @@ function updateAdjacencyMatrix()
     % Add new matrix to 3D matrix
     adjMatrix(:, :, end + 1) = newAdjMatrix;
 
-    % Display updated adjacency matrix
-    disp('Updated adjacency matrix:');
-    disp(adjMatrix(:, :, end));
-    for i = 1:n
-        neighbors = find(adjMatrix(i, :, end)); 
-        fprintf('Node %d has neighbors at iteration %d: %s\n', i, numel(adjMatrix(1, 1, :)), mat2str(neighbors)); 
-    end
+    % % Display updated adjacency matrix
+    % disp('Updated adjacency matrix:');
+    % disp(adjMatrix(:, :, end));
+    % for i = 1:n
+    %     neighbors = find(adjMatrix(i, :, end)); 
+    %     fprintf('Node %d has neighbors at iteration %d: %s\n', i, numel(adjMatrix(1, 1, :)), mat2str(neighbors)); 
+    % end
 end

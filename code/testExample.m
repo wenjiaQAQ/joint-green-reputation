@@ -154,17 +154,17 @@ disp(adjMatrix(:,:,1));
 % showTable(n, initialJRValues);
 
 %First Strategy Plan
-strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, initialJRValues, n, adjMatrix);
+strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, n);
 disp('strategyFirstPlan:');
 disp(strategyPlan);
 
 % Check Add Success Strategy Plan
-strategyCheckAddSuccess(supplierRange, manufacturerRange, retailerRange, initialJRValues, initialT2GValues, n, adjMatrix, alpha);
+strategyCheckAddSuccess(supplierRange, manufacturerRange, retailerRange, n, alpha);
 disp('strategyCheckAddSuccess:');
 disp(strategyPlan);
 
 % Update Fail Add Strategy Plan (final version)
-strategyFailAddUpdate(initialJRValues, n, adjMatrix);
+strategyFailAddUpdate(n);
 disp('strategyFailAddUpdate:');
 disp(strategyPlan);
 
