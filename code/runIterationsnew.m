@@ -1,4 +1,4 @@
-function runIterationsold(t, alpha)
+function runIterationsnew(t, alpha, numIterations)
     global n;
     global adjMatrix;
     global dynamicT2GUpdate;
@@ -67,6 +67,19 @@ function runIterationsold(t, alpha)
             disp(iteration);
             steadyState = iteration;
             break;
+        end
+    end
+
+    % If steady state is reached, keep the last value for the remaining iterations
+    if noChangeSteps >= steadyStateThreshold && iteration < numIterations
+        finalT2G = dynamicT2GUpdate(:, end);
+        finalAdjMatrix = adjMatrix(:, :, end);
+        finalJR = dynamicJRUpdate(:, end);
+
+        for remainingIter = iteration+1:numIterations
+            dynamicT2GUpdate = [dynamicT2GUpdate, finalT2G];
+            adjMatrix(:, :, end+1) = finalAdjMatrix;
+            dynamicJRUpdate = [dynamicJRUpdate, finalJR];
         end
     end
 end

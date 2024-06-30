@@ -27,15 +27,18 @@ function plotT2GDiffusionCurve(t)
     % Plot the T2G diffusion curve
     figure;
     hold on;
-    plot(0:t, allGreenPercentage, '-o', 'DisplayName', 'All Nodes');
-    plot(0:t, supplierGreenPercentage, '-x', 'DisplayName', 'Suppliers');
-    plot(0:t, manufacturerGreenPercentage, '-s', 'DisplayName', 'Manufacturers');
-    plot(0:t, retailerGreenPercentage, '-d', 'DisplayName', 'Retailers');
-    xlabel('Time Step');
-    ylabel('Percentage of T2G=1');
-    title('S-shaped Diffusion Curve of T2G Transition');
+    plot(0:t, allGreenPercentage, '-', 'DisplayName', 'All Nodes', 'Color', [1, 0, 0]);
+    plot(0:t, supplierGreenPercentage, '-', 'DisplayName', 'Suppliers', 'Color', [0, 0, 1]);
+    plot(0:t, manufacturerGreenPercentage, '-', 'DisplayName', 'Manufacturers', 'Color', [0, 0.5, 0]);
+    plot(0:t, retailerGreenPercentage, '-', 'DisplayName', 'Retailers', 'Color', [1, 0.65, 0]);
+    title('\alpha = 0.2', 'FontSize', 25);
+    xlabel('t', 'FontSize', 25);
+    ylabel('K^0 = 0.75', 'FontSize', 25);
     legend show;
     grid on;
     hold off;
+
+    % Set the x-axis limit to 300
+    xlim([0, 50]);
 end
 
