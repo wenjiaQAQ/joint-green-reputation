@@ -129,9 +129,6 @@ plotAverageT2GDiffusionCurve(t, numIterations)
 % Plot the JR diffusion curve
 %plotJRDiffusionCurve(t);
 
-% Plot the AdjMatrix Density
-% plotAdjMatrixHeatmap(t);
-
 % Plot AdjMatrix Structure
 %plotAdjMatrixStructure();
 
