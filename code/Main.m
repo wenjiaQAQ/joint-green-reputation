@@ -1,27 +1,34 @@
 clc;
 %addpath(genpath('D:\uva\courses\thesis\code'))
-
-global n;
-global t;                    %t=0
-global K;%size: t+1x1   update[K0,0.4,0.2,...]
-global alpha;
-global numSuppliers;
+%% Basic elements & init
+global n;                    % #companies n = numSuppliers+numManufacturers+numRetailers
+global numSuppliers;        
 global numManufacturers;
 global numRetailers;
-global supplierRange;
-global manufacturerRange
-global retailerRange
-global initialT2GValues;
-global initialJRValues;
-global adjMatrix;
-global strategyPlan;
-global dynamicT2GUpdate;
-global dynamicJRUpdate;
+global supplierRange;        % id of suppliers; dimension: 1*numSuppliers
+global manufacturerRange;    % id of manufactures; dimension: 1*numManufactures
+global retailerRange;        % id of retailers; dimension: 1*numRetailers
+
+global t;                    % timestep; t=0
+global K;                    % init tran ratio
+global initialT2GValues;     % Dimension: n*1
+
+global initialJRValues;      % init joint green reputation; dimension: n*1
 global supplierAverageJR;
 global manufacturerAverageJR;
 global retailerAverageJR;
-global steadyState;
 
+global alpha;                % weight of joint green reputation
+%% network structure
+global adjMatrix;
+
+%% Dynamics
+global strategyPlan;        % dimension: n*1
+global dynamicT2GUpdate;    % dimension: n*(t+1)
+global dynamicJRUpdate;     % dimension: n*(t+1)
+global steadyState;         % the time step of reaching stable state
+
+%% Each experiment is terminated at t and is repreated numIterations times
 
 % Initialize variables
 n = 20;  % {20,500}
