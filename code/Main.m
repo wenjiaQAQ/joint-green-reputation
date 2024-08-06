@@ -24,7 +24,7 @@ global adjMatrix;
 
 %% Dynamics
 global strategyPlan;        % dimension: n*1
-global dynamicT2GUpdate;    % dimension: n*(t+1)
+global dynamicT2GUpdate;    % dimension: n*1
 global dynamicJRUpdate;     % dimension: n*(t+1)
 global steadyState;         % the time step of reaching stable state
 
