@@ -37,7 +37,7 @@ alpha = 0.7;  % {0.2,0.5,0.7}
 K = 0.75;  % {0.25,0.5,0.75}
 % Initialize strategy plan cell array
 strategyPlan = cell(n, 1);
-steadyState = t;
+steadyState = t;     % Terminating time step
 numIterations = 30;  % Number of repetitions for the experiment
 allData = cell(1, numIterations);
 
@@ -76,7 +76,7 @@ for currentIteration = 1:numIterations
     weightT2G = 1 - alpha;
     initialJRValues = weightT2G * initialT2GValues;
     % Initialize dynamicJRUpdate
-    dynamicJRUpdate = initialJRValues; 
+    dynamicJRUpdate = initialJRValues;
     % disp('initialJRValues:');
     % showTable(n, initialJRValues);
     
