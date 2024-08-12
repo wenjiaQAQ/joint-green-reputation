@@ -1,8 +1,20 @@
-function strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, n)
+%% This function generate plans for agents
+% Each company compares their current JR with peers of the same catogory
+% if current JR > peerAverage: do nothing ~ [0, NA]
+% if current JR < peerAverage:
+%   if numNeighbors <= 2 : transfrom ~ [3, NA]
+%   if numNeighbors < 5:
+%       build connection with one whose JR (idAim) > peerAverage ~ [1, idAim]
+%       if there is not such idAim ~ [0, NA]
+%   if numNeighbor > 5
+%       cut off the connection wiht one whose JR is the lowest
+function strategyFirstPlan()
 
     global strategyPlan;
     global dynamicJRUpdate;
     global adjMatrix;
+    
+    global supplierRange manufacturerRange retailerRange n;        % id of retailers; dimension: 1*numRetailers
 
     currentJRValues = dynamicJRUpdate(:, end);
     % disp('currentJRValues');
@@ -13,6 +25,7 @@ function strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, n)
     supplierAverageJR = mean(currentJRValues(supplierRange));
     manufacturerAverageJR = mean(currentJRValues(manufacturerRange));
     retailerAverageJR = mean(currentJRValues(retailerRange));
+    
     % disp('supplierAverageJR:');
     % disp(supplierAverageJR);
     % disp('manufacturerAverageJR:');
@@ -21,6 +34,9 @@ function strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, n)
     % disp(retailerAverageJR);
 
     % Each node's JR, neighbors, #neighbors
+    % Degree matrix D (n x n)
+    D = diag(sum(currentAdjMatrix, 2));
+    
     for i = 1:n
         currentJR = currentJRValues(i);
         %disp('CurrentJR');
@@ -28,7 +44,8 @@ function strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, n)
         neighbors = find(currentAdjMatrix(i, :) == 1);
         %disp('CurrentJR neighbors');
         %disp(neighbors);
-        numNeighbors = length(neighbors);
+%         numNeighbors = length(neighbors);
+        numNeighbors = D(i, i);
         %disp('CurrentJR neighbors length');
         %disp(numNeighbors);
 
@@ -68,7 +85,7 @@ function strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, n)
                         filteredNeighbors = [filteredNeighbors, neighbor];
                     end
                 end
-                    if ~isempty(filteredNeighbors)
+                if ~isempty(filteredNeighbors)
                     % Random choose one potential neighbor
                     futureNeighborID = filteredNeighbors(randi(length(filteredNeighbors)));
                     strategyPlan{i} = ['[1, ', num2str(futureNeighborID), ']'];

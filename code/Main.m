@@ -13,7 +13,7 @@ global t;                    % timestep; t=0
 global K;                    % init tran ratio
 global initialT2GValues;     % Dimension: n*1
 
-global initialJRValues;      % init joint green reputation; dimension: n*1
+% global initialJRValues;      % init joint green reputation; dimension: n*1
 global supplierAverageJR;
 global manufacturerAverageJR;
 global retailerAverageJR;
@@ -72,16 +72,16 @@ for currentIteration = 1:numIterations
     % Initialize dynamicT2GUpdate
     dynamicT2GUpdate = initialT2GValues;
     
-    %initial value of JR
-    weightT2G = 1 - alpha;
-    initialJRValues = weightT2G * initialT2GValues;
+    % Calculate joint green repuataion
+%     weightT2G = 1 - alpha;
+%     initialJRValues = weightT2G * initialT2GValues;
     % Initialize dynamicJRUpdate
-    dynamicJRUpdate = initialJRValues;
+    dynamicJRUpdate = jrCalculate();
     % disp('initialJRValues:');
     % showTable(n, initialJRValues);
     
     %First Strategy Plan
-    strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, n);
+    strategyFirstPlan();
     % disp('strategyFirstPlan:');
     % disp(strategyPlan);
     
