@@ -74,10 +74,9 @@ function strategyPlan2 = strategyFirstPlan2()
                 % Random choose one if there are multiple
                 neighborToDisconnect = minJRNeighbors(randi(length(minJRNeighbors)));
                 strategyPlan2{i} = ['[2, ', num2str(neighborToDisconnect), ']'];
-            else % the node is a manufacture, idea1: maintain at least one connection with suppliers / retailers;
-                 % idea2: cut off with the neighbor who is from the specific side which has more than 5 cooperators, and meanwhile has the lowest JR
-                
+            else % need to 
             end
+            
         end
     end
     
