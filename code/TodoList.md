@@ -7,6 +7,7 @@
 - Remove all display functions
 - Redesign the simulation experiments
 - Subset greenTransDyn (specific parameter setting) unction out from main
+- Realize idea2 in strategyFirstPlan2.m
 
 ### Please check the following:
 - Main.m, line 14, do we need var initialT2GValues to be global?

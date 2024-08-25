@@ -69,15 +69,21 @@ function strategyPlan2 = strategyFirstPlan2()
                 % Find the lowest JR of needtoCut(i)'s neighbor, and cut
                 % connection
                 neighbors = allNodes(currentAdjMatrix(:,needtoCut(i))==1);
-                minJR = min(currentJRValues(neighbors));
-                minJRNeighbors = neighbors(currentJRValues(neighbors) == minJR);
-                % Random choose one if there are multiple
-                neighborToDisconnect = minJRNeighbors(randi(length(minJRNeighbors)));
-                strategyPlan2{i} = ['[2, ', num2str(neighborToDisconnect), ']'];
-            else % the node is a manufacture, idea1: maintain at least one connection with suppliers / retailers;
+            else % the node is a manufacture. Idea1: maintain at least one connection with suppliers / retailers;
                  % idea2: cut off with the neighbor who is from the specific side which has more than 5 cooperators, and meanwhile has the lowest JR
-                
+                neighbors_suppliers = find(allNodes(currentAdjMatrix(needtoCut(i),:) == 1) <= supplierRange(end));
+                neighbors_retailers = find(allNodes(currentAdjMatrix(needtoCut(i),:) == 1) >= retailerRange(end));
+                if sum(neighbors_suppliers) >= sum(neighbors_retailers) % need to cut with one supplier neighbor
+                    neighbors = neighbors_suppliers;
+                else % need to cut with one retailer neighbors
+                    neighbors = neighbors_retailers;
+                end
             end
+            minJR = min(currentJRValues(neighbors));
+            minJRNeighbors = neighbors(currentJRValues(neighbors) == minJR);
+            % Random choose one if there are multiple
+            neighborToDisconnect = minJRNeighbors(randi(length(minJRNeighbors)));
+            strategyPlan2{i} = ['[2, ', num2str(neighborToDisconnect), ']'];
         end
     end
     
@@ -110,7 +116,7 @@ function strategyPlan2 = strategyFirstPlan2()
             else
                 % No suitable future neighbors, for example, When node has [3,4] neighbor 
                 % and all potentialNeighbors already made connections
-                % Let this situation be maintain for now
+                % Let this situation be maintain for NOW
                 % strategyPlan{i} = '[NA, NA]';  
                 strategyPlan2{needtoAdd(i)} = '[0, NA]';
             end
