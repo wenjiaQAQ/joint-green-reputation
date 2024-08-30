@@ -1,21 +1,17 @@
 %% This function generate plans for agents
 % Each company compares their current JR with peers of the same catogory
-% if current JR > peerAverage: do nothing ~ [0, NA]
+% if current JR > peerAverage: do nothing ~ [0, NaN]
 % if current JR < peerAverage:
-%   if numNeighbors <= 2 : transfrom ~ [3, NA]
+%   if numNeighbors <= 2 : transfrom ~ [3, NaN]
 %   if numNeighbors < 5:
 %       build connection with one whose JR (idAim) > peerAverage ~ [1, idAim]
-%       if there is not such idAim ~ [0, NA]
+%       if there is not such idAim ~ [0, NaN]
 %   if numNeighbor >= 5
 %       cut off the connection wiht one whose JR is the lowest ~ [2, idAim]
 function strategyPlan2 = strategyFirstPlan2()
 
-    global dynamicJRUpdate;
-    global adjMatrix;
+    global dynamicJRUpdate adjMatrix n supplierRange manufacturerRange retailerRange;        % id of retailers; dimension: 1*numRetailers
     
-    global supplierRange manufacturerRange retailerRange n;        % id of retailers; dimension: 1*numRetailers
-    
-    strategyPlan2 = cell(20, 1);
     currentJRValues = dynamicJRUpdate(:, end);
     currentAdjMatrix = adjMatrix(:, :, end);
 
@@ -35,20 +31,22 @@ function strategyPlan2 = strategyFirstPlan2()
     D = diag(sum(currentAdjMatrix, 2));
     currentJRPeerJRTable(:, 3) = diag(D);
     
-    %% JR > peerAverage: do nothing ~ [0, NA]
+    strategyPlan2 = zeros(n, 2);
+    
+    %% JR > peerAverage: do nothing ~ [0, NaN]
     idfor0 = currentJRPeerJRTable(:,1) > currentJRPeerJRTable(:,2);
     needNothing = find(idfor0 == 1);
-    if all(needNothing <= length(strategyPlan2))
-        strategyPlan2(needNothing) = {'[0, Na]'};
+    if all(needNothing <= n)
+        strategyPlan2(needNothing,:) = [0, NaN];
     else
         error('Indices in needNothing exceed the dimensions of strategyPlan.');
     end
     
-    %% numNeighbors <= 2 : transfrom ~ [3, NA]
+    %% numNeighbors <= 2 : transfrom ~ [3, NaN]
     idfor3 = currentJRPeerJRTable(:,1) <= currentJRPeerJRTable(:,2) & currentJRPeerJRTable(:,3) <= 2;
     needTransfer = find(idfor3 == 1);
-    if all(needTransfer <= length(strategyPlan2))
-        strategyPlan2(needTransfer) = {'[3, NA]'};
+    if all(needTransfer <= n)
+        strategyPlan2(needNothing,:) = [3, NaN];
     else
         error('Indices in needNothing exceed the dimensions of strategyPlan.');
     end
@@ -83,7 +81,7 @@ function strategyPlan2 = strategyFirstPlan2()
             minJRNeighbors = neighbors(currentJRValues(neighbors) == minJR);
             % Random choose one if there are multiple
             neighborToDisconnect = minJRNeighbors(randi(length(minJRNeighbors)));
-            strategyPlan2{i} = ['[2, ', num2str(neighborToDisconnect), ']'];
+            strategyPlan2(i,:) = [2, neighborToDisconnect];
         end
     end
     
@@ -112,13 +110,13 @@ function strategyPlan2 = strategyFirstPlan2()
             if ~isempty(filteredNeighbors)
                 % Random choose one potential neighbor
                 futureNeighborID = filteredNeighbors(randi(length(filteredNeighbors)));
-                strategyPlan2{needtoAdd(i)} = ['[1, ', num2str(futureNeighborID), ']'];
+                strategyPlan2(needtoAdd(i),:) = [1, futureNeighborID];
             else
                 % No suitable future neighbors, for example, When node has [3,4] neighbor 
                 % and all potentialNeighbors already made connections
                 % Let this situation be maintain for NOW
-                % strategyPlan{i} = '[NA, NA]';  
-                strategyPlan2{needtoAdd(i)} = '[0, NA]';
+                % strategyPlan{i} = [0, NaN];  
+                strategyPlan2(needtoAdd(i),:) = [0, NaN];
             end
         end
     end
