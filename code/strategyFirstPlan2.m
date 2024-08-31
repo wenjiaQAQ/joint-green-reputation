@@ -59,7 +59,7 @@ function strategyFirstPlan2()
         for i = 1:numNeedtoCut
             neighbors = find(currentAdjMatrix(needtoCut(i), :)==1);
             % if the node is not manufacture
-            if find(manufacturerRange == needtoCut(i), 1) % the node is a manufacture. Idea1: maintain at least one connection with suppliers / retailers;
+            if ~isempty(find(manufacturerRange == needtoCut(i), 1)) % the node is a manufacture. Idea1: maintain at least one connection with suppliers / retailers;
                 % idea2: cut off with the neighbor who is from the specific side which has more than 5 cooperators, and meanwhile has the lowest JR
                 neighbors_suppliers = neighbors(neighbors <= supplierRange(end));
                 neighbors_retailers = neighbors(neighbors > manufacturerRange(end));
