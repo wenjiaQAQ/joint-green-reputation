@@ -59,7 +59,7 @@ retailerRange = numSuppliers + numManufacturers + 1 : n;
 
 for currentIteration = 1:numIterations
     % Create initial adjacency matrix (t=0)
-    adjMatrix = createAdjacencyMatrix(n, supplierRange, manufacturerRange, retailerRange);
+    adjMatrix = createAdjacencyMatrix();
     % disp(adjMatrix(:,:,1)); 
     
     % Initial value of T2G

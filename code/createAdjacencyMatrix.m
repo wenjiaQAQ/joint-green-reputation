@@ -1,4 +1,6 @@
-function A = createAdjacencyMatrix(n, supplierRange, manufacturerRange, retailerRange)
+function A = createAdjacencyMatrix()
+    global n supplierRange manufacturerRange retailerRange
+    
     % Initialize the adjacency matrix with zeros
     % Three-dimensional matrix for time steps
     A = zeros(n, n, 1);

@@ -34,21 +34,15 @@ function strategyPlan2 = strategyFirstPlan2()
     strategyPlan2 = zeros(n, 2);
     
     %% JR > peerAverage: do nothing ~ [0, NaN]
-    idfor0 = currentJRPeerJRTable(:,1) > currentJRPeerJRTable(:,2);
-    needNothing = find(idfor0 == 1);
-    if all(needNothing <= n)
-        strategyPlan2(needNothing,:) = [0, NaN];
-    else
-        error('Indices in needNothing exceed the dimensions of strategyPlan.');
+    needNothing = find(currentJRPeerJRTable(:,1) > currentJRPeerJRTable(:,2));
+    if ~isempty(needNothing) && all(needNothing <= n)
+        strategyPlan2 = helperPlanUpdate(strategyPlan2, needNothing, [0, NaN]);
     end
     
     %% numNeighbors <= 2 : transfrom ~ [3, NaN]
-    idfor3 = currentJRPeerJRTable(:,1) <= currentJRPeerJRTable(:,2) & currentJRPeerJRTable(:,3) <= 2;
-    needTransfer = find(idfor3 == 1);
-    if all(needTransfer <= n)
-        strategyPlan2(needNothing,:) = [3, NaN];
-    else
-        error('Indices in needNothing exceed the dimensions of strategyPlan.');
+    needTransfer = find(currentJRPeerJRTable(:,1) <= currentJRPeerJRTable(:,2) & currentJRPeerJRTable(:,3) <= 2);
+    if ~isempty(needTransfer) && all(needTransfer <= n)
+        strategyPlan2 = helperPlanUpdate(strategyPlan2, needTransfer, [3, NaN]);
     end
     
     %% numNeighbor >= 5, cut off the connection wiht one whose JR is the lowest ~ [2, idAim]
@@ -58,37 +52,34 @@ function strategyPlan2 = strategyFirstPlan2()
     % the id of companies who needs to cut off
     needtoCut = find(idfor2 == 1);
     numNeedtoCut = length(needtoCut); % the number of company who needs to cut with neighbors
-    allNodes = 1:1:n;
     % for the companies who needs to cut, cut off with their lowest neighbor
     if (numNeedtoCut~=0)
         for i = 1:numNeedtoCut
+            neighbors = find(currentAdjMatrix(needtoCut(i), :)==1);
             % if the node is not manufacture
-            if (isempty(find(manufacturerRange == allNodes(needtoCut(i)))))
-                % Find the lowest JR of needtoCut(i)'s neighbor, and cut
-                % connection
-                neighbors = allNodes(currentAdjMatrix(:,needtoCut(i))==1);
-            else % the node is a manufacture. Idea1: maintain at least one connection with suppliers / retailers;
-                 % idea2: cut off with the neighbor who is from the specific side which has more than 5 cooperators, and meanwhile has the lowest JR
-                neighbors_suppliers = find(allNodes(currentAdjMatrix(needtoCut(i),:) == 1) <= supplierRange(end));
-                neighbors_retailers = find(allNodes(currentAdjMatrix(needtoCut(i),:) == 1) >= retailerRange(end));
+            if find(manufacturerRange == needtoCut(i), 1) % the node is a manufacture. Idea1: maintain at least one connection with suppliers / retailers;
+                % idea2: cut off with the neighbor who is from the specific side which has more than 5 cooperators, and meanwhile has the lowest JR
+                neighbors_suppliers = neighbors(neighbors <= supplierRange(end));
+                neighbors_retailers = neighbors(neighbors > manufacturerRange(end));
                 if sum(neighbors_suppliers) >= sum(neighbors_retailers) % need to cut with one supplier neighbor
                     neighbors = neighbors_suppliers;
                 else % need to cut with one retailer neighbors
                     neighbors = neighbors_retailers;
                 end
             end
+            % Find the lowest JR of needtoCut(i)'s neighbor, and cut connection
             minJR = min(currentJRValues(neighbors));
             minJRNeighbors = neighbors(currentJRValues(neighbors) == minJR);
             % Random choose one if there are multiple
             neighborToDisconnect = minJRNeighbors(randi(length(minJRNeighbors)));
-            strategyPlan2(i,:) = [2, neighborToDisconnect];
+            strategyPlan2 = helperPlanUpdate(strategyPlan2, needtoCut(i), [2, neighborToDisconnect]);
         end
     end
     
     %% The rest companies are current JR < peerAverage, need to either build new connections or do nothing
     ones_vector = ones(size(idfor0)); % Create a vector of ones with the same size as idfor0
-    idfor3 = ones_vector - idfor0 - idfor3 - idfor2;
-    needtoAdd = find(idfor3 == 1);
+    ones_vector([needNothing; needTransfer; needtoCut]) = 0;
+    needtoAdd = find(ones_vector == 1);
     numNeedtoAdd = length(needtoAdd);
     if (numNeedtoAdd~=0)
         for i = 1:numNeedtoAdd
@@ -102,7 +93,7 @@ function strategyPlan2 = strategyFirstPlan2()
             
             % Find the future neighbor category and remove the existing
             % connections
-            neighbors = find(currentAdjMatrix(:,needtoAdd(i)));
+            neighbors = find(currentAdjMatrix(needtoAdd(i),:)==1);
             potentialNeighbors = setdiff(futureNeighborRange, neighbors);
             % Find node J which JR > peer average
             filteredNeighbors = filteredNeighborsGenerate(potentialNeighbors, currentJRPeerJRTable);
@@ -110,13 +101,12 @@ function strategyPlan2 = strategyFirstPlan2()
             if ~isempty(filteredNeighbors)
                 % Random choose one potential neighbor
                 futureNeighborID = filteredNeighbors(randi(length(filteredNeighbors)));
-                strategyPlan2(needtoAdd(i),:) = [1, futureNeighborID];
+                strategyPlan2 = helperPlanUpdate(strategyPlan2, needtoAdd(i), [1, futureNeighborID]);
             else
                 % No suitable future neighbors, for example, When node has [3,4] neighbor 
                 % and all potentialNeighbors already made connections
                 % Let this situation be maintain for NOW
-                % strategyPlan{i} = [0, NaN];  
-                strategyPlan2(needtoAdd(i),:) = [0, NaN];
+                strategyPlan2 = helperPlanUpdate(strategyPlan2, needtoAdd(i), [0, NaN]);
             end
         end
     end

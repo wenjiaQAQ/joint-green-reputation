@@ -18,3 +18,17 @@ D = diag(sum(adjM, 2));
 round(dynamicJRUpdate(i),4) == round((1-alpha)*dynamicT2GUpdate(i) + alpha*(adjM(i,:)*dynamicJRUpdate)/D(i,i),4)
 
 % 
+
+strategyPlan2 = zeros(6,2);
+strategyPlan2(1,:) = [1, 2];
+strategyPlan2(2,:) = [0,NaN];
+strategyPlan2(3,:) = [1, 2];
+strategyPlan2(4,:) = [1, 2];
+strategyPlan2(5,:) = [1, 4];
+strategyPlan2(6,:) = [2, 1];
+display(strategyPlan2)
+
+strategyPlan2(strategyPlan2(:,1) == 1,2)
+unique(strategyPlan2(strategyPlan2(:,1) == 1,2))
+
+~isempty(unique(strategyPlan2(strategyPlan2(:,1) == 1,2)))
