@@ -8,17 +8,19 @@
 %       if there is not such idAim ~ [0, NaN]
 %   if numNeighbor >= 5
 %       cut off the connection wiht one whose JR is the lowest ~ [2, idAim]
-function strategyPlan2 = strategyFirstPlan2()
+function strategyFirstPlan2()
 
-    global dynamicJRUpdate adjMatrix n supplierRange manufacturerRange retailerRange;        % id of retailers; dimension: 1*numRetailers
+    global dynamicJRUpdate adjMatrix n supplierRange 
+    global manufacturerRange retailerRange supplierAveJR 
+    global manufacturerAveJR retailerAveJR strategyPlan
     
     currentJRValues = dynamicJRUpdate(:, end);
     currentAdjMatrix = adjMatrix(:, :, end);
 
     % Calculate peer average JR for each category
-    supplierAverageJR = mean(currentJRValues(supplierRange));
-    manufacturerAverageJR = mean(currentJRValues(manufacturerRange));
-    retailerAverageJR = mean(currentJRValues(retailerRange));
+    supplierAveJR = mean(currentJRValues(supplierRange));
+    manufacturerAveJR = mean(currentJRValues(manufacturerRange));
+    retailerAveJR = mean(currentJRValues(retailerRange));
     
     % Construct the currentJRPeerJRTable
     currentJRPeerJRTable(:,1) = currentJRValues;
@@ -31,18 +33,18 @@ function strategyPlan2 = strategyFirstPlan2()
     D = diag(sum(currentAdjMatrix, 2));
     currentJRPeerJRTable(:, 3) = diag(D);
     
-    strategyPlan2 = zeros(n, 2);
+    
     
     %% JR > peerAverage: do nothing ~ [0, NaN]
     needNothing = find(currentJRPeerJRTable(:,1) > currentJRPeerJRTable(:,2));
     if ~isempty(needNothing) && all(needNothing <= n)
-        strategyPlan2 = helperPlanUpdate(strategyPlan2, needNothing, [0, NaN]);
+        strategyPlan = helperPlanUpdate(strategyPlan, needNothing, [0, NaN]);
     end
     
     %% numNeighbors <= 2 : transfrom ~ [3, NaN]
     needTransfer = find(currentJRPeerJRTable(:,1) <= currentJRPeerJRTable(:,2) & currentJRPeerJRTable(:,3) <= 2);
     if ~isempty(needTransfer) && all(needTransfer <= n)
-        strategyPlan2 = helperPlanUpdate(strategyPlan2, needTransfer, [3, NaN]);
+        strategyPlan = helperPlanUpdate(strategyPlan, needTransfer, [3, NaN]);
     end
     
     %% numNeighbor >= 5, cut off the connection wiht one whose JR is the lowest ~ [2, idAim]
@@ -72,7 +74,7 @@ function strategyPlan2 = strategyFirstPlan2()
             minJRNeighbors = neighbors(currentJRValues(neighbors) == minJR);
             % Random choose one if there are multiple
             neighborToDisconnect = minJRNeighbors(randi(length(minJRNeighbors)));
-            strategyPlan2 = helperPlanUpdate(strategyPlan2, needtoCut(i), [2, neighborToDisconnect]);
+            strategyPlan = helperPlanUpdate(strategyPlan, needtoCut(i), [2, neighborToDisconnect]);
         end
     end
     
@@ -101,12 +103,12 @@ function strategyPlan2 = strategyFirstPlan2()
             if ~isempty(filteredNeighbors)
                 % Random choose one potential neighbor
                 futureNeighborID = filteredNeighbors(randi(length(filteredNeighbors)));
-                strategyPlan2 = helperPlanUpdate(strategyPlan2, needtoAdd(i), [1, futureNeighborID]);
+                strategyPlan = helperPlanUpdate(strategyPlan, needtoAdd(i), [1, futureNeighborID]);
             else
                 % No suitable future neighbors, for example, When node has [3,4] neighbor 
                 % and all potentialNeighbors already made connections
                 % Let this situation be maintain for NOW
-                strategyPlan2 = helperPlanUpdate(strategyPlan2, needtoAdd(i), [0, NaN]);
+                strategyPlan = helperPlanUpdate(strategyPlan, needtoAdd(i), [0, NaN]);
             end
         end
     end

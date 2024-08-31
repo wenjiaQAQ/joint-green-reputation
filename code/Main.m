@@ -13,10 +13,7 @@ global t;                    % timestep; t=0
 global K;                    % init tran ratio
 global initialT2GValues;     % Dimension: n*1
 
-% global initialJRValues;      % init joint green reputation; dimension: n*1
-global supplierAverageJR;
-global manufacturerAverageJR;
-global retailerAverageJR;
+global supplierAveJR manufacturerAveJR retailerAveJR
 
 global alpha;                % weight of joint green reputation
 %% network structure
@@ -35,8 +32,8 @@ n = 20;  % {20,500}
 t = 500;
 alpha = 0.7;  % {0.2,0.5,0.7}
 K = 0.75;  % {0.25,0.5,0.75}
-% Initialize strategy plan cell array
-strategyPlan = cell(n, 1);
+% Initialize strategy plan n*2 matrix
+strategyPlan = zeros(n, 2);
 steadyState = t;     % Terminating time step
 numIterations = 30;  % Number of repetitions for the experiment
 allData = cell(1, numIterations);
