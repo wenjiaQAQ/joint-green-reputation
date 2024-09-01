@@ -13,8 +13,6 @@ global t;                    % timestep; t=0
 global K;                    % init tran ratio
 global initialT2GValues;     % Dimension: n*1
 
-global supplierAveJR manufacturerAveJR retailerAveJR
-
 global alpha;                % weight of joint green reputation
 %% network structure
 global adjMatrix;
@@ -74,38 +72,24 @@ for currentIteration = 1:numIterations
 %     initialJRValues = weightT2G * initialT2GValues;
     % Initialize dynamicJRUpdate
     dynamicJRUpdate = jrCalculate();
-    % disp('initialJRValues:');
-    % showTable(n, initialJRValues);
     
     %First Strategy Plan
-    strategyFirstPlan();
-    % disp('strategyFirstPlan:');
-    % disp(strategyPlan);
+%     strategyFirstPlan();
+    strategyFirstPlan2();
     
     % Check Add Success Strategy Plan
-    strategyCheckAddSuccess(supplierRange, manufacturerRange, retailerRange, n, alpha);
-    % disp('strategyCheckAddSuccess:');
-    % disp(strategyPlan);
+%     strategyCheckAddSuccess(supplierRange, manufacturerRange, retailerRange, n, alpha);
+    strategyCheckAddSuccess2()
     
     % Update Fail Add Strategy Plan (final version)
-    strategyFailAddUpdate(n);
-    % disp('strategyFailAddUpdate:');
-    % disp(strategyPlan);
+%     strategyFailAddUpdate(n);
+    strategyFailAddUpdate2()
     
     % Update T2G
     updateT2G();
-    % disp('update T2G:');
-    % disp(dynamicT2GUpdate);
     
     % Update adjMatric
     updateAdjacencyMatrix();
-    % disp('Updated adjacency matrix:');
-    % disp(adjMatrix(:, :, end));
-    % for i = 1:n
-    %     neighbors = find(adjMatrix(i, :, end)); 
-    %     fprintf('Node %d has neighbors: %s\n', i, mat2str(neighbors)); 
-    % end
-    
     
     % Update JR value
     updateJR();
@@ -114,7 +98,7 @@ for currentIteration = 1:numIterations
     
     % Loop for t iterations
     %runIterations(t, alpha, numIterations);
-    runIterations(t, alpha);
+    runIterations();
     allData{currentIteration} = dynamicT2GUpdate;
 end
 
