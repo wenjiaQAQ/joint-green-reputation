@@ -1,38 +1,53 @@
 function updateAdjacencyMatrix()
-    global strategyPlan;
-    global adjMatrix;
-    global n;
+    global strategyPlan adjMatrix
 
     % Get the latest adjMatrix
     currentAdjMatrix = adjMatrix(:, :, end);
 
     % Create new matrix for update
     newAdjMatrix = currentAdjMatrix;
-
-    for i = 1:n
-        strategy = strategyPlan{i};
-        strategy = char(strategy); % Convert to character array (string)
-        if startsWith(strategy, '[1,')
-            % Extract the id to connect with
-            id = str2double(extractBetween(strategy, '[1, ', ']'));
-            newAdjMatrix(i, id) = 1;
-            newAdjMatrix(id, i) = 1; 
-        elseif startsWith(strategy, '[2,')
-            % Extract the id to disconnect from
-            id = str2double(extractBetween(strategy, '[2, ', ']'));
-            newAdjMatrix(i, id) = 0;
-            newAdjMatrix(id, i) = 0; 
-        end
+    
+    % Extract the id to connect with
+    nodesPlantoConnect = find(strategyPlan(:,1) == 1);
+    if ~isempty(nodesPlantoConnect)
+        toNodes = strategyPlan(nodesPlantoConnect,2);
+        newAdjMatrix = helperMatrixUpdate(newAdjMatrix, nodesPlantoConnect, toNodes, 1);
+    end
+    % Extract the id to disconnect from
+    nodesPlantoDisconnect = find(strategyPlan(:,1) == 2);
+    if ~isempty(nodesPlantoDisconnect)
+        toNodes = strategyPlan(nodesPlantoDisconnect,2);
+        newAdjMatrix = helperMatrixUpdate(newAdjMatrix, nodesPlantoDisconnect, toNodes, 0);
     end
 
     % Add new matrix to 3D matrix
     adjMatrix(:, :, end + 1) = newAdjMatrix;
-
-    % % Display updated adjacency matrix
-    % disp('Updated adjacency matrix:');
-    % disp(adjMatrix(:, :, end));
-    % for i = 1:n
-    %     neighbors = find(adjMatrix(i, :, end)); 
-    %     fprintf('Node %d has neighbors at iteration %d: %s\n', i, numel(adjMatrix(1, 1, :)), mat2str(neighbors)); 
-    % end
 end
+
+%% Test
+% newAdjMatrix = currentAdjMatrix;
+% for i = 1:length(toNodes)
+%     if (newAdjMatrix(nodesPlantoDisconnect, toNodes) ~= 1)
+%         error('fromNodes and toNodes do not have connection');
+%     end
+% end
+% 
+% % Extract the id to connect with
+% nodesPlantoConnect = find(strategyPlan(:,1) == 1);
+% if ~isempty(nodesPlantoConnect)
+%     toNodes = strategyPlan(nodesPlantoConnect,2);
+%     newAdjMatrix = helperMatrixUpdate(newAdjMatrix, nodesPlantoConnect, toNodes, 1);
+% end
+% % Extract the id to disconnect from
+% nodesPlantoDisconnect = find(strategyPlan(:,1) == 2);
+% if ~isempty(nodesPlantoDisconnect)
+%     toNodes = strategyPlan(nodesPlantoDisconnect,2);
+%     newAdjMatrix = helperMatrixUpdate(newAdjMatrix, nodesPlantoDisconnect, toNodes, 0);
+% end
+% 
+% for i = 1:length(toNodes)
+%     if (newAdjMatrix(nodesPlantoDisconnect, toNodes) ~= 0)
+%         error('fromNodes and toNodes fail to disconnect');
+%     end
+% end
+% % Pass
