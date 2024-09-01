@@ -108,7 +108,7 @@ for currentIteration = 1:numIterations
     
     
     % Update JR value
-    updateJR(alpha);
+    updateJR();
     % disp('Updated JR values:');
     % disp(dynamicJRUpdate);
     
