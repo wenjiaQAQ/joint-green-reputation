@@ -74,10 +74,4 @@ function A = createAdjacencyMatrix()
             makeSymmetric(i, connections); 
         end
     end
-
-%     % Display neighbors for each connected node
-%     for i = 1:n
-%         neighbors = find(A(i,:,1)); 
-%         fprintf('Node %d has neighbors: %s\n', i, mat2str(neighbors)); 
-%     end
 end
