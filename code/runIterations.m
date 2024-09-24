@@ -7,33 +7,17 @@ function runIterations()
 
     for iteration = 1:t
         % Get the current T2G and adjMatrix
-        previousT2G = dynamicT2GUpdate(:, end);
-        previousAdjMatrix = adjMatrix(:, :, end);
+        currentJRValues = dynamicT2GUpdate(:, end);
+        currentAdjMatrix = adjMatrix(:, :, end);
         
         %First Strategy Plan
-        strategyFirstPlan2();
+        strategyFirstPlan2(currentJRValues, currentAdjMatrix);
 
         % Check Add Success Strategy Plan
         strategyCheckAddSuccess2()
 
         % Update Fail Add Strategy Plan (final version)
         strategyFailAddUpdate2()
-    
-
-%         % First Strategy Plan
-%         strategyFirstPlan(supplierRange, manufacturerRange, retailerRange, n);
-%         % disp(['strategyFirstPlan at iteration ', num2str(iteration), ':']);
-%         % disp(strategyPlan);
-% 
-%         % Check Add Success Strategy Plan
-%         strategyCheckAddSuccess(supplierRange, manufacturerRange, retailerRange, n, alpha);
-%         % disp(['strategyCheckAddSuccess at iteration ', num2str(iteration), ':']);
-%         % disp(strategyPlan);
-% 
-%         % Update Fail Add Strategy Plan
-%         strategyFailAddUpdate(n);
-%         % disp(['strategyFailAddUpdate at iteration ', num2str(iteration), ':']);
-%         % disp(strategyPlan);
 
         % Update T2G based on the strategy plan
         updateT2G();
@@ -45,7 +29,7 @@ function runIterations()
         updateJR();
 
          % Check changes of T2G and adjMatrix
-        if isequal(previousT2G, dynamicT2GUpdate(:, end)) && isequal(previousAdjMatrix, adjMatrix(:, :, end))
+        if isequal(currentJRValues, dynamicT2GUpdate(:, end)) && isequal(currentAdjMatrix, adjMatrix(:, :, end))
             noChangeSteps = noChangeSteps + 1;
         else
             noChangeSteps = 0;

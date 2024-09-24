@@ -5,7 +5,7 @@ function updateT2G()
     % Get the current T2G -> last column of dynamicT2GUpdate
     currentT2GValues = dynamicT2GUpdate(:, end);
 
-    transferNodes = intersect(find(strategyPlan(:,1) == 3), find(isnan(strategyPlan(:,1))));
+    transferNodes = intersect(find(strategyPlan(:,1) == 3), find(isnan(strategyPlan(:,2))));
     if ~isempty(transferNodes)
         currentT2GValues(transferNodes) = 1;
     end

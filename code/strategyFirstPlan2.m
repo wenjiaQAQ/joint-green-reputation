@@ -8,14 +8,11 @@
 %       if there is not such idAim ~ [0, NaN]
 %   if numNeighbor >= 5
 %       cut off the connection wiht one whose JR is the lowest ~ [2, idAim]
-function strategyFirstPlan2()
+function strategyFirstPlan2(currentJRValues, currentAdjMatrix)
 
-    global dynamicJRUpdate adjMatrix n supplierRange 
+    global n supplierRange 
     global manufacturerRange retailerRange supplierAveJR 
     global manufacturerAveJR retailerAveJR strategyPlan
-    
-    currentJRValues = dynamicJRUpdate(:, end);
-    currentAdjMatrix = adjMatrix(:, :, end);
 
     % Calculate peer average JR for each category
     supplierAveJR = mean(currentJRValues(supplierRange));

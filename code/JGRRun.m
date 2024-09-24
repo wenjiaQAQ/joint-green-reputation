@@ -67,7 +67,7 @@ function JGRRun(N, T, Alpha, k, numIter)
         dynamicJRUpdate = jrCalculate();
         
         %First Strategy Plan
-        strategyFirstPlan2();
+        strategyFirstPlan2(dynamicJRUpdate, adjMatrix);
             
         % Check Add Success Strategy Plan
         strategyCheckAddSuccess2()
@@ -87,7 +87,7 @@ function JGRRun(N, T, Alpha, k, numIter)
         % Loop for t iterations
         %runIterations(t, alpha, numIterations);
         runIterations();
-        allData{currentIteration} = dynamicT2GUpdate;
+%         allData{currentIteration} = dynamicT2GUpdate;
     end
     
     filename = 'D:\uva\courses\thesis\AllIterationsData.xlsx';
