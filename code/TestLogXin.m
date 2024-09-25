@@ -1,34 +1,60 @@
 %% This script is for testing
+N = 10;
+T = 2;
+Alpha = 0.2;
+k = 0.25;
+numIter = 2;
 
-%% createAdjacencyMatrix.m
-% check the degree range
-A = createAdjacencyMatrix(n, supplierRange, manufacturerRange, retailerRange);
-degree = sum(A,2);
-degree(supplierRange)'              % present the degree of suppliers
-degree(manufacturerRange)'           % present the degree of manufactures
-degree(retailerRange)'              % present the degree of retailers
+global n;                    % #companies n = numSuppliers+numManufacturers+numRetailers
+global numSuppliers;        
+global numManufacturers;
+global numRetailers;
+global supplierRange;        % id of suppliers; dimension: 1*numSuppliers
+global manufacturerRange;    % id of manufactures; dimension: 1*numManufactures
+global retailerRange;        % id of retailers; dimension: 1*numRetailers
 
-% check the connection
-sum(degree(supplierRange))+sum(degree(retailerRange)) == sum(degree(manufacturerRange)) % should be true
+global t;                    % timestep; t=0
+global K;                    % init tran ratio
+global initialT2GValues;     % Dimension: n*1
 
-% check jrCalculate()
-i = 1;
-adjM = adjMatrix(:, :, end);
-D = diag(sum(adjM, 2));
-round(dynamicJRUpdate(i),4) == round((1-alpha)*dynamicT2GUpdate(i) + alpha*(adjM(i,:)*dynamicJRUpdate)/D(i,i),4)
+global alpha;                % weight of joint green reputation
+%% network structure
+global adjMatrix;
 
-% 
+%% Dynamics
+global strategyPlan;        % dimension: n*1
+global dynamicT2GUpdate;    % dimension: n*1
+global dynamicJRUpdate;     % dimension: n*(t+1)
+global steadyState;         % the time step of reaching stable state
+global T2GHistory; 
+% Initialize variables
+n = N;  % {20,500}
+t = T; % Termination times
+alpha = Alpha;  % {0.2,0.5,0.7}
+K = k;  % {0.25,0.5,0.75}
 
-strategyPlan2 = zeros(6,2);
-strategyPlan2(1,:) = [1, 2];
-strategyPlan2(2,:) = [0,NaN];
-strategyPlan2(3,:) = [1, 2];
-strategyPlan2(4,:) = [1, 2];
-strategyPlan2(5,:) = [1, 4];
-strategyPlan2(6,:) = [2, 1];
-display(strategyPlan2)
+% Initialize strategy plan n*2 matrix
+strategyPlan = zeros(n, 2);
+steadyState = t;     % Terminating time step
+numIterations = numIter;  % Number of repetitions for the experiment
 
-strategyPlan2(strategyPlan2(:,1) == 1,2)
-unique(strategyPlan2(strategyPlan2(:,1) == 1,2))
+T2GHistory = zeros((t+1)*numIterations,n);
+% **********************************************
+% allData = cell(1, numIterations);
 
-~isempty(unique(strategyPlan2(strategyPlan2(:,1) == 1,2)))
+% Let the node be equally distributed
+numSuppliers = round(n * 0.33);
+numManufacturers = round(n * 0.33);
+numRetailers = n - numSuppliers - numManufacturers;
+
+% Index ranges
+supplierRange = 1:numSuppliers;
+manufacturerRange = numSuppliers + 1 : numSuppliers + numManufacturers;
+retailerRange = numSuppliers + numManufacturers + 1 : n;
+
+currentIteration = 1;
+
+
+
+
+

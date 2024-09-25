@@ -65,28 +65,9 @@ function JGRRun(N, T, Alpha, k, numIter)
         
         % Calculate joint green repuataion
         dynamicJRUpdate = jrCalculate();
-        
-        %First Strategy Plan
-        strategyFirstPlan2(dynamicJRUpdate, adjMatrix);
-            
-        % Check Add Success Strategy Plan
-        strategyCheckAddSuccess2()
-            
-        % Update Fail Add Strategy Plan (final version)
-        strategyFailAddUpdate2()
-            
-        % Update T2G
-        updateT2G();
-            
-        % Update adjMatric
-        updateAdjacencyMatrix();
-            
-        % Update JR value
-        updateJR();
             
         % Loop for t iterations
-        %runIterations(t, alpha, numIterations);
-        runIterations();
+        runSimulationStep();
 %         allData{currentIteration} = dynamicT2GUpdate;
     end
     

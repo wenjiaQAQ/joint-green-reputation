@@ -1,23 +1,24 @@
-function runIterations()
-    global t adjMatrix dynamicT2GUpdate steadyState
+function runSimulationStep()
+    global t adjMatrix dynamicT2GUpdate dynamicJRUpdate steadyState
 
     % Time step threshold for stable detection
     steadyStateThreshold = 2;
     noChangeSteps = 0; 
 
-    for iteration = 1:t
+    for step = 1:t
         % Get the current T2G and adjMatrix
-        currentJRValues = dynamicT2GUpdate(:, end);
+        currentT2GValues = dynamicT2GUpdate(:, end);
+        currentJRValues = dynamicJRUpdate(:, end);
         currentAdjMatrix = adjMatrix(:, :, end);
         
         %First Strategy Plan
-        strategyFirstPlan2(currentJRValues, currentAdjMatrix);
+        strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues);
 
         % Check Add Success Strategy Plan
-        strategyCheckAddSuccess2()
+        strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GValues)
 
         % Update Fail Add Strategy Plan (final version)
-        strategyFailAddUpdate2()
+        strategyFailAddUpdate2(currentJRValues, currentAdjMatrix, currentT2GValues)
 
         % Update T2G based on the strategy plan
         updateT2G();
@@ -29,7 +30,7 @@ function runIterations()
         updateJR();
 
          % Check changes of T2G and adjMatrix
-        if isequal(currentJRValues, dynamicT2GUpdate(:, end)) && isequal(currentAdjMatrix, adjMatrix(:, :, end))
+        if isequal(currentT2GValues, dynamicT2GUpdate(:, end)) && isequal(currentAdjMatrix, adjMatrix(:, :, end))
             noChangeSteps = noChangeSteps + 1;
         else
             noChangeSteps = 0;
@@ -38,8 +39,8 @@ function runIterations()
         % If there is no change for several time steps, steady state is considered to be reached
         if noChangeSteps >= steadyStateThreshold
             disp('Steady state reached at:');
-            disp(iteration);
-            steadyState = iteration;
+            disp(step);
+            steadyState = step;
             break;
         end
     end

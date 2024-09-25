@@ -1,16 +1,9 @@
 %% This funtion is to check if the generated stratagePlan is successful
 % Aim: Update strategyPlan
-function strategyCheckAddSuccess2()
-    global alpha strategyPlan dynamicT2GUpdate dynamicJRUpdate adjMatrix 
+function strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GValues)
+    global alpha strategyPlan
     global supplierAveJR manufacturerAveJR retailerAveJR supplierRange manufacturerRange retailerRange
 
-    currentT2GValues = dynamicT2GUpdate(:, end);
-    % disp('dynamicT2GUpdate');
-    % disp(dynamicT2GUpdate);
-    currentJRValues = dynamicJRUpdate(:, end);
-    % disp('currentJRValues');
-    % disp(currentJRValues);
-    currentAdjMatrix = adjMatrix(:, :, end);
 
     % Find the current node (focal company that are chosen to be connected)
     currentNodes = unique(strategyPlan((strategyPlan(:,1) == 1),2));
@@ -39,7 +32,7 @@ function strategyCheckAddSuccess2()
                 chosenNode = maxJRNodes(randi(length(maxJRNodes)));
 
                 % Calculate new JR value after adding the chosen node as neighbor
-                newJR = (1-alpha)*currentT2G + alpha*(currentJR*numNeighbors - (1-alpha)*currentT2G*numNeighbors + maxJR)/(numNeighbors+1); %!!!!
+                newJR = (1-alpha)*currentT2G + (currentJR*numNeighbors - (1-alpha)*currentT2G*numNeighbors + maxJR*alpha)/(numNeighbors+1); %!!!!
 
                 if newJR > categoryAverageJR % If new JR value is still greater than category average JR
                     % Update strategyPlan for the nodes that were not chosen

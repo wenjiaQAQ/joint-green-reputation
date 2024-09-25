@@ -8,7 +8,7 @@
 %       if there is not such idAim ~ [0, NaN]
 %   if numNeighbor >= 5
 %       cut off the connection wiht one whose JR is the lowest ~ [2, idAim]
-function strategyFirstPlan2(currentJRValues, currentAdjMatrix)
+function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues)
 
     global n supplierRange 
     global manufacturerRange retailerRange supplierAveJR 
@@ -39,7 +39,7 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix)
     end
     
     %% numNeighbors <= 2 : transfrom ~ [3, NaN]
-    needTransfer = find(currentJRPeerJRTable(:,1) <= currentJRPeerJRTable(:,2) & currentJRPeerJRTable(:,3) <= 2);
+    needTransfer = find(currentJRPeerJRTable(:,1) <= currentJRPeerJRTable(:,2) & currentJRPeerJRTable(:,3) <= 2 & currentT2GValues(:) == 0);
     if ~isempty(needTransfer) && all(needTransfer <= n)
         strategyPlan = helperPlanUpdate(strategyPlan, needTransfer, [3, NaN]);
     end

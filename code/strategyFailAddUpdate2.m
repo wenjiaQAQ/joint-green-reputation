@@ -2,11 +2,8 @@
 % if numNeighbors < 2 => trans
 % else if the JR of focal node is lower than all neighbors => maintain
 % else cut off with the neighbor with lowest JR
-function strategyFailAddUpdate2()
-    global strategyPlan dynamicJRUpdate adjMatrix supplierRange manufacturerRange
-
-    currentJRValues = dynamicJRUpdate(:, end);
-    currentAdjMatrix = adjMatrix(:, :, end);
+function strategyFailAddUpdate2(currentJRValues, currentAdjMatrix, currentT2GValues)
+    global strategyPlan supplierRange manufacturerRange
 
     % Find all nodes that failed add [1,-1]
     failedNodes = find(strategyPlan(:,1) == 1 & strategyPlan(:,2) == -1);
@@ -17,7 +14,9 @@ function strategyFailAddUpdate2()
             % data of the failedNodes(i)
             neighbors = find(currentAdjMatrix(failedNodes(i), :) == 1);
             numNeighbors = length(neighbors);
-            if numNeighbors < 2 % Transition to green !!!
+            % *********** need to consider if it is manufacture, threshold
+            % of neighbors are different!!!!!!
+            if (numNeighbors < 2 && currentT2GValues(failedNodes(i)) ~= 1) % Transition to green !!!
                 strategyPlan = helperPlanUpdate(strategyPlan, failedNodes(i), [3, NaN]);
             else
                 currentJR = currentJRValues(failedNodes(i));
