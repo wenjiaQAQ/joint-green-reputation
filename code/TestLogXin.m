@@ -54,7 +54,24 @@ retailerRange = numSuppliers + numManufacturers + 1 : n;
 
 currentIteration = 1;
 
+%% Test helperCheckNodeTypeReturnNeighbors
+adjMatrix = createAdjacencyMatrix();
+currentAdjMatrix = adjMatrix;
+i = 2;
+[class, upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighbors(i, currentAdjMatrix);
+% Expected outcome
+% 1, 0, [4 5 6]
 
+i = 4;
+[class, upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighbors(i, currentAdjMatrix)
+% Expected outcome
+% 2, [1 2 3], [7 8 9 10]
+
+i = 10;
+[class, upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighbors(i, currentAdjMatrix)
+% Expected outcome
+% 3, [4 5 6], 0
+% AllPASS
 
 
 

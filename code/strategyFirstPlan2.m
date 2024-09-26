@@ -30,7 +30,24 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues)
     D = diag(sum(currentAdjMatrix, 2));
     currentJRPeerJRTable(:, 3) = diag(D);
     
-    
+    % Create a table | type | #upperStreamNei | #lowerStreamNei | no enough
+    % neighbors |
+    % ******************* need to amend ****************
+    currentNumNeighborTable = zeros(n, 3);
+    for i = 1:n
+        [currentNumNeighborTable(i, 1), upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighbors(i, currentAdjMatrix)
+        if upperNeighbors == 0
+            currentNumNeighborTable(i, 2) = 0;
+        else
+            currentNumNeighborTable(i, 2) = length(upperNeighbors);
+        end
+        
+        if lowerNeighbors == 0
+            currentNumNeighborTable(i, 3) = 0;
+        else
+            currentNumNeighborTable(i, 3) = length(upperNeighbors);
+        end
+    end
     
     %% JR > peerAverage: do nothing ~ [0, NaN]
     needNothing = find(currentJRPeerJRTable(:,1) > currentJRPeerJRTable(:,2));
@@ -39,6 +56,7 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues)
     end
     
     %% numNeighbors <= 2 : transfrom ~ [3, NaN]
+    % ******************* need to amend ****************
     needTransfer = find(currentJRPeerJRTable(:,1) <= currentJRPeerJRTable(:,2) & currentJRPeerJRTable(:,3) <= 2 & currentT2GValues(:) == 0);
     if ~isempty(needTransfer) && all(needTransfer <= n)
         strategyPlan = helperPlanUpdate(strategyPlan, needTransfer, [3, NaN]);

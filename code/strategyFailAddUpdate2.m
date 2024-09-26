@@ -14,8 +14,8 @@ function strategyFailAddUpdate2(currentJRValues, currentAdjMatrix, currentT2GVal
             % data of the failedNodes(i)
             neighbors = find(currentAdjMatrix(failedNodes(i), :) == 1);
             numNeighbors = length(neighbors);
-            % *********** need to consider if it is manufacture, threshold
-            % of neighbors are different!!!!!!
+            % Check if it is a manufacture: ismember(failedNodes(i), manufacturerRange)
+            
             if (numNeighbors < 2 && currentT2GValues(failedNodes(i)) ~= 1) % Transition to green !!!
                 strategyPlan = helperPlanUpdate(strategyPlan, failedNodes(i), [3, NaN]);
             else
