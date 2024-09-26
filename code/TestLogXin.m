@@ -1,0 +1,77 @@
+%% This script is for testing
+N = 10;
+T = 2;
+Alpha = 0.2;
+k = 0.25;
+numIter = 2;
+
+global n;                    % #companies n = numSuppliers+numManufacturers+numRetailers
+global numSuppliers;        
+global numManufacturers;
+global numRetailers;
+global supplierRange;        % id of suppliers; dimension: 1*numSuppliers
+global manufacturerRange;    % id of manufactures; dimension: 1*numManufactures
+global retailerRange;        % id of retailers; dimension: 1*numRetailers
+
+global t;                    % timestep; t=0
+global K;                    % init tran ratio
+global initialT2GValues;     % Dimension: n*1
+
+global alpha;                % weight of joint green reputation
+%% network structure
+global adjMatrix;
+
+%% Dynamics
+global strategyPlan;        % dimension: n*1
+global dynamicT2GUpdate;    % dimension: n*1
+global dynamicJRUpdate;     % dimension: n*(t+1)
+global steadyState;         % the time step of reaching stable state
+global T2GHistory; 
+% Initialize variables
+n = N;  % {20,500}
+t = T; % Termination times
+alpha = Alpha;  % {0.2,0.5,0.7}
+K = k;  % {0.25,0.5,0.75}
+
+% Initialize strategy plan n*2 matrix
+strategyPlan = zeros(n, 2);
+steadyState = t;     % Terminating time step
+numIterations = numIter;  % Number of repetitions for the experiment
+
+T2GHistory = zeros((t+1)*numIterations,n);
+% **********************************************
+% allData = cell(1, numIterations);
+
+% Let the node be equally distributed
+numSuppliers = round(n * 0.33);
+numManufacturers = round(n * 0.33);
+numRetailers = n - numSuppliers - numManufacturers;
+
+% Index ranges
+supplierRange = 1:numSuppliers;
+manufacturerRange = numSuppliers + 1 : numSuppliers + numManufacturers;
+retailerRange = numSuppliers + numManufacturers + 1 : n;
+
+currentIteration = 1;
+
+%% Test helperCheckNodeTypeReturnNeighbors
+adjMatrix = createAdjacencyMatrix();
+currentAdjMatrix = adjMatrix;
+i = 2;
+[class, upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighbors(i, currentAdjMatrix);
+% Expected outcome
+% 1, 0, [4 5 6]
+
+i = 4;
+[class, upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighbors(i, currentAdjMatrix)
+% Expected outcome
+% 2, [1 2 3], [7 8 9 10]
+
+i = 10;
+[class, upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighbors(i, currentAdjMatrix)
+% Expected outcome
+% 3, [4 5 6], 0
+% AllPASS
+
+
+
