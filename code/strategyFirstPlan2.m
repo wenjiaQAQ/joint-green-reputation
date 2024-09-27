@@ -30,23 +30,34 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues)
     D = diag(sum(currentAdjMatrix, 2));
     currentJRPeerJRTable(:, 3) = diag(D);
     
-    % Create a table | type | #upperStreamNei | #lowerStreamNei | no enough
-    % neighbors |
-    % ******************* need to amend ****************
-    currentNumNeighborTable = zeros(n, 3);
+    % Create a table | type | #upperStreamNei | #lowerStreamNei | <=2
+    % neighbor | <2 neighbor |
+    currentNumNeighborTable = zeros(n, 5);
     for i = 1:n
-        [currentNumNeighborTable(i, 1), upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighbors(i, currentAdjMatrix)
-        if upperNeighbors == 0
-            currentNumNeighborTable(i, 2) = 0;
+        [currentNumNeighborTable(i, 1), upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighbors(i, currentAdjMatrix);
+        
+        % Supplier
+        if upperNeighbors == -1
+            currentNumNeighborTable(i, 2) = -1;
         else
-            currentNumNeighborTable(i, 2) = length(upperNeighbors);
+            currentNumNeighborTable(i, 2) = length(lowerNeighbors);
         end
         
+        % Retailer
         if lowerNeighbors == 0
-            currentNumNeighborTable(i, 3) = 0;
+            currentNumNeighborTable(i, 3) = -1;
         else
             currentNumNeighborTable(i, 3) = length(upperNeighbors);
         end
+        
+        % Cannot cut neighbors when JR is lower than peerAve, has to
+        % transform
+        currentNumNeighborTable(:, 4) = (currentNumNeighborTable(:,1) > -1 & currentNumNeighborTable(:,1) <=2 ) ...
+            & (currentNumNeighborTable(:,2) > -1 & currentNumNeighborTable(:,2) <=2 );
+        
+        % Need to create more connection (if transformed), or transform
+        currentNumNeighborTable(:, 5) = (currentNumNeighborTable(:,1) > -1 & currentNumNeighborTable(:,1) <2 ) ...
+            & (currentNumNeighborTable(:,2) > -1 & currentNumNeighborTable(:,2) <2 );
     end
     
     %% JR > peerAverage: do nothing ~ [0, NaN]

@@ -12,7 +12,7 @@ function [class, upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighb
     
     if isSupplier
         class = 1;
-        upperNeighbors = 0;
+        upperNeighbors = -1;
         lowerNeighbors = allNodes(currentAdjMatrix(i,:) == 1);
         return;
     end
@@ -28,7 +28,7 @@ function [class, upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighb
     if isRetailer
         class = 1;
         upperNeighbors = allNodes(currentAdjMatrix(i,:) == 1);
-        lowerNeighbors = 0;        
+        lowerNeighbors = -1;        
         return;
     end
     
