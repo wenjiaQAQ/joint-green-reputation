@@ -26,7 +26,7 @@ function [class, upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighb
     end
     
     if isRetailer
-        class = 1;
+        class = 3;
         upperNeighbors = allNodes(currentAdjMatrix(i,:) == 1);
         lowerNeighbors = -1;        
         return;
