@@ -2,6 +2,7 @@
 % Each company compares their current JR with peers of the same catogory
 % if current JR > peerAverage: do nothing ~ [0, NaN]
 % if current JR < peerAverage:
+%   if numNeighbors <= 2 : transfrom ~ [3, NaN]
 %   if numNeighbors < 5:
 %       build connection with one whose JR (idAim) > peerAverage ~ [1, idAim]
 %       if there is not such idAim ~ [0, NaN]
