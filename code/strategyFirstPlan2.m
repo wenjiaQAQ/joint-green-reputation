@@ -9,7 +9,7 @@
 %       cut off the connection wiht one whose JR is the lowest ~ [2, idAim]
 % Input: % currentNumNeighborTable: | type | #upperStreamNei | #lowerStreamNei | <=2 | neighbor | <2 neighbor |
 % Output: the plan table
-function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues, currentNumNeighborTable)
+function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentNumNeighborTable)
 
     global n supplierRange 
     global manufacturerRange retailerRange supplierAveJR 
@@ -31,6 +31,9 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues,
     % Degree matrix D (n x n)
     D = diag(sum(currentAdjMatrix, 2));
     currentJRPeerJRTable(:, 3) = diag(D);
+    
+    % Ini strategyPlan !!!
+    strategyPlan = zeros(n, 2);
         
     %% JR >= peerAverage AND #neighbor >= 2: do nothing ~ [0, NaN]
     needNothing = find(currentJRPeerJRTable(:,1) >= currentJRPeerJRTable(:,2) & ~currentNumNeighborTable(:,5));

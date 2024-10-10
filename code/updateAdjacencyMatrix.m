@@ -13,6 +13,7 @@ function updateAdjacencyMatrix()
         toNodes = strategyPlan(nodesPlantoConnect,2);
         newAdjMatrix = helperMatrixUpdate(newAdjMatrix, nodesPlantoConnect, toNodes, 1);
     end
+    
     % Extract the id to disconnect from
     nodesPlantoDisconnect = find(strategyPlan(:,1) == 2);
     if ~isempty(nodesPlantoDisconnect)
