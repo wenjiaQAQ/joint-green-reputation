@@ -74,8 +74,46 @@ currentAdjMatrix = adjMatrix;
 % % 3, [4 5 6], 0
 % % AllPASS
 
-%% Test helperCurrentNumNeighborTable(currentAdjMatrix)
-table = helperCurrentNumNeighborTable(currentAdjMatrix);
+% %% Test helperCurrentNumNeighborTable(currentAdjMatrix)
+% table = helperCurrentNumNeighborTable(currentAdjMatrix);
+% % PASS
+
+
+%% Test strategyFirstPlan2
+% ============ JGRRun() ============ 
+initialT2GValues = zeros(n, 1);
+% Random choose nK nodes be green
+initialG = randperm(n, round(n * K));
+initialT2GValues(initialG) = 1;
+T2GHistory((currentIteration-1)*t+1,:) = initialT2GValues';
+% Initialize dynamicT2GUpdate
+dynamicT2GUpdate = initialT2GValues;
+
+% Calculate joint green repuataion
+dynamicJRUpdate = jrCalculate();
+
+% ============ runSimulationStep() ============ 
+currentT2GValues = dynamicT2GUpdate(:, end);
+currentJRValues = dynamicJRUpdate(:, end);
+currentAdjMatrix = adjMatrix(:, :, end);
+
+% currentNumNeighborTable: | type | #upperStreamNei | #lowerStreamNei | <=2 | neighbor | <2 neighbor |
+currentNumNeighborTable = helperCurrentNumNeighborTable(currentAdjMatrix);
+
+% ============ strategyFirstPlan2() ============ 
+% currently PASS
+
+% ============ strategyCheckAddSuccess2() ============ 
+
+
+
+
+
+
+
+
+
+
 
 
 

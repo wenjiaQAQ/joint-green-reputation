@@ -11,14 +11,17 @@ function runSimulationStep()
         currentJRValues = dynamicJRUpdate(:, end);
         currentAdjMatrix = adjMatrix(:, :, end);
         
+        % currentNumNeighborTable: | type | #upperStreamNei | #lowerStreamNei | <=2 | neighbor | <2 neighbor |
+        currentNumNeighborTable = helperCurrentNumNeighborTable(currentAdjMatrix);
+
         %First Strategy Plan
-        strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues);
+        strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues, currentNumNeighborTable);
 
         % Check Add Success Strategy Plan
-        strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GValues)
+        strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GValues, currentNumNeighborTable);
 
         % Update Fail Add Strategy Plan (final version)
-        strategyFailAddUpdate2(currentJRValues, currentAdjMatrix, currentT2GValues)
+        strategyFailAddUpdate2(currentJRValues, currentAdjMatrix, currentT2GValues);
 
         % Update T2G based on the strategy plan
         updateT2G();

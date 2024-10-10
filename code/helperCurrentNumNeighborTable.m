@@ -1,8 +1,8 @@
-%% Create a table | type | #upperStreamNei | #lowerStreamNei | <=2 neighbor | <2 neighbor |
+%% Create a table | 1-type | 2-#upperStreamNei | 3-#lowerStreamNei | 4- <=2 neighbor | 5- <2 neighbor | 6- >=5 neighbor |
 function table = helperCurrentNumNeighborTable(currentAdjMatrix)
     global n supplierRange manufacturerRange retailerRange;
     
-    table = zeros(n, 5);
+    table = zeros(n, 6);
     for i = 1:n
         
         allNodes = 1:1:n;
@@ -21,6 +21,8 @@ function table = helperCurrentNumNeighborTable(currentAdjMatrix)
             table(i, 4) = table(i, 3) <= 2;
             % Need to create more connection (if transformed), or transform
             table(i, 5) = table(i, 3) < 2;
+            % Has too many neighbors, cannot add neighbors, or need to cut
+            table(i, 6) = table(i, 3) >= 5;
         end
         
         if isManufacture
@@ -29,6 +31,7 @@ function table = helperCurrentNumNeighborTable(currentAdjMatrix)
             table(i, 3) = length(neighbors(neighbors > manufacturerRange(end))); % #lowerNeighbors
             table(i, 4) = table(i, 2) <= 2 || table(i, 3) <= 2;
             table(i, 5) = table(i, 2) < 2 || table(i, 3) < 2;
+            table(i, 6) =  table(i, 2) >= 5 ||  table(i, 3) >=5;
         end
         
         if isRetailer
@@ -37,6 +40,7 @@ function table = helperCurrentNumNeighborTable(currentAdjMatrix)
             table(i, 3) = -1; % no lowerNeighbors
             table(i, 4) = table(i, 2) <= 2;
             table(i, 5) = table(i, 2) < 2;
+            table(i, 6) = table(i, 2) >= 5;
         end
     end
 end

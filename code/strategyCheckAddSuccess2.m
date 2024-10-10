@@ -1,8 +1,8 @@
 %% This funtion is to check if the generated stratagePlan is successful
 % Aim: Update strategyPlan
-function strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GValues)
+function strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GValues, currentNumNeighborTable)
     global alpha strategyPlan
-    global supplierAveJR manufacturerAveJR retailerAveJR supplierRange manufacturerRange retailerRange
+    global supplierAveJR manufacturerAveJR retailerAveJR supplierRange retailerRange
 
 
     % Find the current node (focal company that are chosen to be connected)
@@ -15,33 +15,34 @@ function strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GV
             currentT2G = currentT2GValues(currentNodes(i));
             neighbors = find(currentAdjMatrix(currentNodes(i), :) == 1);
             numNeighbors = length(neighbors);
+            tooManyNeighbors = currentNumNeighborTable(currentNodes(i), 6); % 1 := #neighbor >=5
+            categoryCurrentNodes = currentNumNeighborTable(currentNodes(i), 1); % 1 := supplier;  2 := manufacture;  3 := retailer
             
             % Determine the category of the current node
-            categoryAverageJR = helperCategoryAveJR(currentNodes(i), supplierAveJR, manufacturerAveJR, retailerAveJR);
-            
-            % Find nodes that want to connect to the current node
+            categoryAverageJR = helperCategoryAveJR(categoryCurrentNodes, supplierAveJR, manufacturerAveJR, retailerAveJR);
+                        
+            % Find id of the nodes that want to connect to the current node
             nodesToConnect = find(strategyPlan(:,2) == currentNodes(i));
             % If current node has too many neighbors nodesToConnect => update to [1, -1]
-            if (numNeighbors >= 5 && (~isempty(find(supplierRange == currentNodes(i), 1)) || ~isempty(find(retailerRange == currentNodes(i), 1)))) || (numNeighbors >= 10 && ~isempty(find(manufacturerRange == currentNodes(i), 1)))
-                strategyPlan = helperPlanUpdate(strategyPlan, nodesToConnect, [1, -1]);
-            else % If current node has less than 5 neighbors
-                % Find the node with the highest JR value
-                maxJR = max(currentJRValues(nodesToConnect));
-                maxJRNodes = intersect(find(currentJRValues == maxJR), nodesToConnect); % !!!
-                % If multiple, choose randomly
-                chosenNode = maxJRNodes(randi(length(maxJRNodes)));
-
-                % Calculate new JR value after adding the chosen node as neighbor
-                newJR = (1-alpha)*currentT2G + (currentJR*numNeighbors - (1-alpha)*currentT2G*numNeighbors + maxJR*alpha)/(numNeighbors+1); %!!!!
-
-                if newJR > categoryAverageJR % If new JR value is still greater than category average JR
-                    % Update strategyPlan for the nodes that were not chosen
-                    nodesNotChosen = setdiff(nodesToConnect, chosenNode);
-                else % Otherwise all building new connection fail !!!
-                    nodesNotChosen = nodesToConnect;
+            if tooManyNeighbors
+                if categoryCurrentNodes == 2 % current node is a Manufacture
+                    numSupplierNeighbors = currentNumNeighborTable(currentNodes(i), 2); 
+                    nodesToConnectSupplier = nodesToConnect(nodesToConnect <= supplierRange(end));
+                    nodesToConnectRetailer = nodesToConnect(nodesToConnect >= retailerRange(1));
+                    if numSupplierNeighbors >= 5 % have too many supplier neighbors
+                        % nodesToConnectSupplier fail to add
+                        nodesFailtoAdd = nodesToConnectSupplier;
+                    else
+                        nodesFailtoAdd = nodesToConnectRetailer;
+                    end
+                else % current node is a Supplier or a Retailer
+                    nodesFailtoAdd = nodesToConnect;
                 end
-                strategyPlan = helperPlanUpdate(strategyPlan, nodesNotChosen, [1, -1]);
+            else % still have space for new neighbors, select the node with the higest JR to connect
+                nodesFailtoAdd= helperExcludeNodeHightestJR(currentT2G, currentJR, alpha, categoryAverageJR, numNeighbors, nodesToConnect, currentJRValues);
             end
+            % For nodesFailtoAdd, update their plan with [1, -1]
+            strategyPlan = helperPlanUpdate(strategyPlan, nodesFailtoAdd, [1, -1]);
         end
     end
 end

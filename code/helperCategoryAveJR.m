@@ -1,11 +1,10 @@
-function categoryAveJR = helperCategoryAveJR(nodeID, supplierAveJR, manufacturerAveJR, retailerAveJR)
-    global supplierRange manufacturerRange 
-    
-    if ismember(nodeID, supplierRange)
-        categoryAveJR = supplierAveJR;
-    elseif ismember(i, manufacturerRange)
-        categoryAveJR = manufacturerAveJR;
-    else
-        categoryAveJR = retailerAveJR;
+function categoryAveJR = helperCategoryAveJR(categoryCurrentNodes, supplierAveJR, manufacturerAveJR, retailerAveJR)
+    switch categoryCurrentNodes
+        case 1
+            categoryAveJR = supplierAveJR;
+        case 2
+            categoryAveJR = manufacturerAveJR;
+        otherwise
+            categoryAveJR = retailerAveJR;
     end
 end

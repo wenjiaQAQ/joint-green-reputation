@@ -8,7 +8,9 @@
 %       if there is not such idAim ~ [0, NaN]
 %   if numNeighbor >= 5
 %       cut off the connection wiht one whose JR is the lowest ~ [2, idAim]
-function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues)
+% Input: % currentNumNeighborTable: | type | #upperStreamNei | #lowerStreamNei | <=2 | neighbor | <2 neighbor |
+% Output: the plan table
+function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues, currentNumNeighborTable)
 
     global n supplierRange 
     global manufacturerRange retailerRange supplierAveJR 
@@ -20,6 +22,7 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues)
     retailerAveJR = mean(currentJRValues(retailerRange));
     
     % Construct the currentJRPeerJRTable
+    % | currentJRValues | peerAve | # neighbors |
     currentJRPeerJRTable(:,1) = currentJRValues;
     currentJRPeerJRTable(supplierRange,2) = supplierAveJR;    
     currentJRPeerJRTable(manufacturerRange,2) = manufacturerAveJR;
@@ -29,54 +32,21 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues)
     % Degree matrix D (n x n)
     D = diag(sum(currentAdjMatrix, 2));
     currentJRPeerJRTable(:, 3) = diag(D);
-    
-    % Create a table | type | #upperStreamNei | #lowerStreamNei | <=2
-    % neighbor | <2 neighbor |
-    currentNumNeighborTable = zeros(n, 5);
-    for i = 1:n
-        [currentNumNeighborTable(i, 1), upperNeighbors, lowerNeighbors]=helperCheckNodeTypeReturnNeighbors(i, currentAdjMatrix);
         
-        % Supplier
-        if upperNeighbors == -1
-            currentNumNeighborTable(i, 2) = -1;
-        else
-            currentNumNeighborTable(i, 2) = length(lowerNeighbors);
-        end
-        
-        % Retailer
-        if lowerNeighbors == 0
-            currentNumNeighborTable(i, 3) = -1;
-        else
-            currentNumNeighborTable(i, 3) = length(upperNeighbors);
-        end
-        
-        % Cannot cut neighbors when JR is lower than peerAve, has to
-        % transform
-        currentNumNeighborTable(:, 4) = (currentNumNeighborTable(:,1) > -1 & currentNumNeighborTable(:,1) <=2 ) ...
-            & (currentNumNeighborTable(:,2) > -1 & currentNumNeighborTable(:,2) <=2 );
-        
-        % Need to create more connection (if transformed), or transform
-        currentNumNeighborTable(:, 5) = (currentNumNeighborTable(:,1) > -1 & currentNumNeighborTable(:,1) <2 ) ...
-            & (currentNumNeighborTable(:,2) > -1 & currentNumNeighborTable(:,2) <2 );
-    end
-    
-    %% JR > peerAverage: do nothing ~ [0, NaN]
-    needNothing = find(currentJRPeerJRTable(:,1) > currentJRPeerJRTable(:,2));
+    %% JR >= peerAverage AND #neighbor >= 2: do nothing ~ [0, NaN]
+    needNothing = find(currentJRPeerJRTable(:,1) >= currentJRPeerJRTable(:,2) & ~currentNumNeighborTable(:,5));
     if ~isempty(needNothing) && all(needNothing <= n)
         strategyPlan = helperPlanUpdate(strategyPlan, needNothing, [0, NaN]);
     end
     
-    %% numNeighbors <= 2 : transfrom ~ [3, NaN]
-    % ******************* need to amend ****************
-    needTransfer = find(currentJRPeerJRTable(:,1) <= currentJRPeerJRTable(:,2) & currentJRPeerJRTable(:,3) <= 2 & currentT2GValues(:) == 0);
+    %% JR < peerAverage AND #Neighbors <= 2 : transfrom ~ [3, NaN]
+    needTransfer = find(currentJRPeerJRTable(:,1) < currentJRPeerJRTable(:,2) & currentNumNeighborTable(:,4) & currentT2GValues(:) == 0);
     if ~isempty(needTransfer) && all(needTransfer <= n)
         strategyPlan = helperPlanUpdate(strategyPlan, needTransfer, [3, NaN]);
     end
     
-    %% numNeighbor >= 5, cut off the connection wiht one whose JR is the lowest ~ [2, idAim]
-    idfor2 = currentJRPeerJRTable(:,1) <= currentJRPeerJRTable(:,2) & currentJRPeerJRTable(:,3) >= 5; % [0 1 1 0 0 0 1 0 ...]
-    idfor2(manufacturerRange) = 0; % exclude manufacturerRange
-    idfor2(manufacturerRange' & currentJRPeerJRTable(manufacturerRange,3) >= 10) = 1; % unless manufacturerRange >=10
+    %% numNeighbor >= 5 (currentNumNeighborTable(:, 6) ==1): cut off the connection wiht one whose JR is the lowest ~ [2, idAim]
+    idfor2 = currentJRPeerJRTable(:,1) <= currentJRPeerJRTable(:,2) & currentNumNeighborTable(:, 6);
     % the id of companies who needs to cut off
     needtoCut = find(idfor2 == 1);
     numNeedtoCut = length(needtoCut); % the number of company who needs to cut with neighbors
@@ -87,23 +57,28 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues)
         end
     end
     
-    %% The rest companies are current JR < peerAverage, need to either build new connections or do nothing
+    %% The rest companies need to either build new connections or do nothing
     ones_vector = ones(size(currentJRValues)); % Create a vector of ones with the same size as idfor0
     ones_vector([needNothing; needTransfer; needtoCut]) = 0;
     needtoAdd = find(ones_vector == 1);
     numNeedtoAdd = length(needtoAdd);
     if (numNeedtoAdd~=0)
         for i = 1:numNeedtoAdd
-            if ismember(needtoAdd(i), supplierRange)
-                futureNeighborRange = manufacturerRange;
-            elseif ismember(needtoAdd(i), manufacturerRange)
-                futureNeighborRange = [supplierRange, retailerRange];
-            else
-                futureNeighborRange = manufacturerRange;
+            typeofNode =  currentNumNeighborTable(needtoAdd(i), 1);
+            switch typeofNode
+                case 1
+                    futureNeighborRange = manufacturerRange;
+                case 2
+                    if currentNumNeighborTable(needtoAdd(i), 2) < 2 % #upperStreamNei is too less
+                        futureNeighborRange = [supplierRange];
+                    elseif currentNumNeighborTable(needtoAdd(i), 3) < 2 % #lowerStreamNei is too less
+                        futureNeighborRange = [retailerRange];
+                    else % quite average on both sides
+                        futureNeighborRange = [supplierRange, retailerRange];
+                    end
+                case 3
+                    futureNeighborRange = manufacturerRange;
             end
-            
-            % Find the future neighbor category and remove the existing
-            % connections
             neighbors = find(currentAdjMatrix(needtoAdd(i),:)==1);
             potentialNeighbors = setdiff(futureNeighborRange, neighbors);
             % Find node J which JR > peer average
