@@ -23,7 +23,6 @@ function strategyFailAddUpdate2(currentJRValues, currentAdjMatrix, currentT2GVal
         for i = 1:numFailedNodes
             node = failedNodes(i);
             neighbors = find(currentAdjMatrix(node, :) == 1);
-            [idminNeighbor, minNeighborJR] = helperFindLowestJRNeighbor(currentJRValues, neighbors);
             hasNeighbors = ~isempty(neighbors);
             alreadyTransferred = currentT2GValues(node);
 
@@ -39,6 +38,7 @@ function strategyFailAddUpdate2(currentJRValues, currentAdjMatrix, currentT2GVal
                 strategyPlan = helperPlanUpdate(strategyPlan, node, [3, NaN]);
             else
                 % Has neighbors
+                [idminNeighbor, minNeighborJR] = helperFindLowestJRNeighbor(currentJRValues, neighbors);
                 if currentJRValues(node) < minNeighborJR
                     % I have the lowest JR, transfer
                     strategyPlan = helperPlanUpdate(strategyPlan, node, [3, NaN]);

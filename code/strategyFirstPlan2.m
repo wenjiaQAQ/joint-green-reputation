@@ -86,21 +86,27 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentNumNeighbo
                     futureNeighborRange = manufacturerRange;
             end
             neighbors = find(currentAdjMatrix(needtoAdd(i),:)==1);
+            hasNeighbors = ~isempty(neighbors);
             potentialNeighbors = setdiff(futureNeighborRange, neighbors);
             % Find node J which JR > peer average
             filteredNeighbors = filteredNeighborsGenerate(potentialNeighbors, currentJRPeerJRTable);
+            hasPotentialNeighbors = ~isempty(filteredNeighbors);
             
-            if ~isempty(filteredNeighbors)
+            if hasPotentialNeighbors % has potential neighbors
                 % Random choose one potential neighbor
                 futureNeighborID = filteredNeighbors(randi(length(filteredNeighbors)));
                 strategyPlan = helperPlanUpdate(strategyPlan, needtoAdd(i), [1, futureNeighborID]);
-            else
-                % No suitable future neighbors, for example, When node has [3,4] neighbor 
-                % and all potentialNeighbors already made connections
-                % need to cut off with the neighbor with lowest JR [2, neighbor]
-                % !!!!! no suitable neighbors to cut, for example, all my
-                % neighbors are better than me, than I need to transfer
-                cutoffNeighborAddfail(needtoAdd(i), typeofNode, neighbors, currentJRValues);
+            elseif hasNeighbors % No potential neighbors but has neighbors
+                [idminNeighbor, minNeighborJR] = helperFindLowestJRNeighbor(currentJRValues, neighbors);
+                if currentJRValues(needtoAdd(i)) < minNeighborJR
+                    % I have the lowest JR, transfer
+                    strategyPlan = helperPlanUpdate(strategyPlan, needtoAdd(i), [3, NaN]);
+                else
+                    % Cut off with the lowest neighbor
+                    strategyPlan = helperPlanUpdate(strategyPlan, needtoAdd(i), [2, idminNeighbor]);
+                end                              
+            else % No potential neighbors && no neighbors -> transfer
+                strategyPlan = helperPlanUpdate(strategyPlan, needtoAdd(i), [3, NaN]);
             end
         end
     end
