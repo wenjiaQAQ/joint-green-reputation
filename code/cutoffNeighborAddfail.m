@@ -1,6 +1,6 @@
-function cutoffNeighborAddfail(i, neighbors, currentJRValues)
+function cutoffNeighborAddfail(i, typeofNode, neighbors, currentJRValues)
     global strategyPlan supplierRange manufacturerRange ;
-    if ~isempty(find(manufacturerRange == i, 1)) % if the node is a manufacture. Idea1: maintain at least one connection with suppliers / retailers;
+    if typeofNode == 2 % if the node is a manufacture. Idea1: maintain at least one connection with suppliers / retailers;
         % idea2: cut off with the neighbor who is from the specific side which has more than 5 cooperators, and meanwhile has the lowest JR
         neighbors_suppliers = neighbors(neighbors <= supplierRange(end));
         neighbors_retailers = neighbors(neighbors > manufacturerRange(end));

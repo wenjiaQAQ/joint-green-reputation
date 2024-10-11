@@ -75,9 +75,9 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentNumNeighbo
                 case 1
                     futureNeighborRange = manufacturerRange;
                 case 2
-                    if currentNumNeighborTable(needtoAdd(i), 2) < 2 % #upperStreamNei is too less
+                    if currentNumNeighborTable(needtoAdd(i), 2) < 2 && currentNumNeighborTable(needtoAdd(i), 2) < currentNumNeighborTable(needtoAdd(i), 3)   % #upperStreamNei is too less
                         futureNeighborRange = [supplierRange];
-                    elseif currentNumNeighborTable(needtoAdd(i), 3) < 2 % #lowerStreamNei is too less
+                    elseif currentNumNeighborTable(needtoAdd(i), 3) < 2 && currentNumNeighborTable(needtoAdd(i), 3) < currentNumNeighborTable(needtoAdd(i), 2) % #lowerStreamNei is too less
                         futureNeighborRange = [retailerRange];
                     else % quite average on both sides
                         futureNeighborRange = [supplierRange, retailerRange];
@@ -98,7 +98,9 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentNumNeighbo
                 % No suitable future neighbors, for example, When node has [3,4] neighbor 
                 % and all potentialNeighbors already made connections
                 % need to cut off with the neighbor with lowest JR [2, neighbor]
-                cutoffNeighborAddfail(needtoAdd(i), neighbors, currentJRValues);
+                % !!!!! no suitable neighbors to cut, for example, all my
+                % neighbors are better than me, than I need to transfer
+                cutoffNeighborAddfail(needtoAdd(i), typeofNode, neighbors, currentJRValues);
             end
         end
     end

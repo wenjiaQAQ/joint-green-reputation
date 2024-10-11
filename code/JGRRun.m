@@ -24,7 +24,7 @@ function JGRRun(N, T, Alpha, k, numIter)
     global dynamicT2GUpdate;    % dimension: n*1
     global dynamicJRUpdate;     % dimension: n*(t+1)
     global steadyState;         % the time step of reaching stable state
-    global T2GHistory; 
+    % global T2GHistory; 
     % Initialize variables
     n = N;  % {20,500}
     t = T; % Termination times
@@ -36,7 +36,7 @@ function JGRRun(N, T, Alpha, k, numIter)
     steadyState = t;     % Terminating time step
     numIterations = numIter;  % Number of repetitions for the experiment
 
-    T2GHistory = zeros((t+1)*numIterations,n);
+    % T2GHistory = zeros((t+1)*numIterations,n);
     % **********************************************
     % allData = cell(1, numIterations);
 
@@ -59,7 +59,7 @@ function JGRRun(N, T, Alpha, k, numIter)
         % Random choose nK nodes be green
         initialG = randperm(n, round(n * K));
         initialT2GValues(initialG) = 1;
-        T2GHistory((currentIteration-1)*t+1,:) = initialT2GValues';
+        % T2GHistory((currentIteration-1)*t+1,:) = initialT2GValues';
         % Initialize dynamicT2GUpdate
         dynamicT2GUpdate = initialT2GValues;
         

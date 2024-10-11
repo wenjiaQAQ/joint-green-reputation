@@ -9,9 +9,9 @@ function mymatrix = helperMatrixUpdate(mymatrix, fromNodes, toNodes, ifConnect)
     if length(fromNodes) ~= length(toNodes)
         error('fromNodes and toNodes must have the same length');
     end
-    
-    mymatrix(fromNodes, toNodes) = ifConnect;  % Update M(fromNodes(i), toNodes(i)) for all i
-    mymatrix(toNodes, fromNodes) = ifConnect;  % Update M(toNodes(i), fromNodes(i)) for all i (symmetric)
+
+    mymatrix(sub2ind(size(mymatrix), fromNodes, toNodes)) = ifConnect; % Update M(fromNodes(i), toNodes(i)) for all i
+    mymatrix(sub2ind(size(mymatrix), toNodes, fromNodes)) = ifConnect;  % Update M(toNodes(i), fromNodes(i)) for all i (symmetric)
 end
 
 %% Test

@@ -26,7 +26,6 @@ global strategyPlan;        % dimension: n*1
 global dynamicT2GUpdate;    % dimension: n*1
 global dynamicJRUpdate;     % dimension: n*(t+1)
 global steadyState;         % the time step of reaching stable state
-global T2GHistory; 
 % Initialize variables
 n = N;  % {20,500}
 t = T; % Termination times
@@ -34,11 +33,9 @@ alpha = Alpha;  % {0.2,0.5,0.7}
 K = k;  % {0.25,0.5,0.75}
 
 % Initialize strategy plan n*2 matrix
-strategyPlan = zeros(n, 2);
-steadyState = t;     % Terminating time step
 numIterations = numIter;  % Number of repetitions for the experiment
+steadyState = t;     % Terminating time step
 
-T2GHistory = zeros((t+1)*numIterations,n);
 % **********************************************
 % allData = cell(1, numIterations);
 
