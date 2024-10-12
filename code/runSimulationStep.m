@@ -15,7 +15,7 @@ function runSimulationStep()
         currentNumNeighborTable = helperCurrentNumNeighborTable(currentAdjMatrix);
 
         %First Strategy Plan
-        strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentT2GValues, currentNumNeighborTable);
+        strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentNumNeighborTable);
 
         % Check Add Success Strategy Plan
         strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GValues, currentNumNeighborTable);

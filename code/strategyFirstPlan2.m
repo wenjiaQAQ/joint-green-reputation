@@ -36,9 +36,46 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentNumNeighbo
     strategyPlan = zeros(n, 2);
         
     %% JR >= peerAverage AND #neighbor >= 2: do nothing ~ [0, NaN]
-    needNothing = find(currentJRPeerJRTable(:,1) >= currentJRPeerJRTable(:,2) & ~currentNumNeighborTable(:,5));
+    tolerance = 1e-10;  % Choose an appropriate tolerance level for your case
+    ifBetterThanPeerAve = (currentJRPeerJRTable(:,1) >= currentJRPeerJRTable(:,2) | abs(currentJRPeerJRTable(:,1) - currentJRPeerJRTable(:,2)) < tolerance);
+    needNothing = find(ifBetterThanPeerAve & ~currentNumNeighborTable(:,5));
     if ~isempty(needNothing) && all(needNothing <= n)
         strategyPlan = helperPlanUpdate(strategyPlan, needNothing, [0, NaN]);
+    end
+
+    %% !!! JR >= peerAverage AND #neighbor < 2: add neighbors if there is~[2, potentialNode], otherwise maintai~ [0, NaN]
+    needAdd = find(ifBetterThanPeerAve & currentNumNeighborTable(:,5));
+    numNeedAdd = length(needAdd);
+    if (numNeedAdd~=0)
+        for i = 1:numNeedAdd
+            typeofNode =  currentNumNeighborTable(needAdd(i), 1);
+            switch typeofNode
+                case 1
+                    futureNeighborRange = manufacturerRange;
+                case 2
+                    if currentNumNeighborTable(needAdd(i), 2) < 2 && currentNumNeighborTable(needAdd(i), 2) < currentNumNeighborTable(needAdd(i), 3)   % #upperStreamNei is too less
+                        futureNeighborRange = [supplierRange];
+                    elseif currentNumNeighborTable(needAdd(i), 3) < 2 && currentNumNeighborTable(needAdd(i), 3) < currentNumNeighborTable(needAdd(i), 2) % #lowerStreamNei is too less
+                        futureNeighborRange = [retailerRange];
+                    else % quite average on both sides
+                        futureNeighborRange = [supplierRange, retailerRange];
+                    end
+                case 3
+                    futureNeighborRange = manufacturerRange;
+            end
+            neighbors = find(currentAdjMatrix(needAdd(i),:)==1);
+            potentialNeighbors = setdiff(futureNeighborRange, neighbors);
+            % Find node J which JR > peer average
+            filteredNeighbors = filteredNeighborsGenerate(potentialNeighbors, currentJRPeerJRTable);
+            hasPotentialNeighbors = ~isempty(filteredNeighbors);
+            if hasPotentialNeighbors % has potential neighbors
+                % Random choose one potential neighbor
+                futureNeighborID = filteredNeighbors(randi(length(filteredNeighbors)));
+                strategyPlan = helperPlanUpdate(strategyPlan, needAdd(i), [1, futureNeighborID]);
+            else
+                strategyPlan = helperPlanUpdate(strategyPlan, needAdd(i), [0, NaN]);
+            end
+        end
     end
     
     % !!!
@@ -65,7 +102,7 @@ function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentNumNeighbo
     %% The rest companies need to either build new connections or do nothing
     ones_vector = ones(size(currentJRValues)); % Create a vector of ones with the same size as idfor0
 %     ones_vector([needNothing; needTransfer; needtoCut]) = 0;
-    ones_vector([needNothing; needtoCut]) = 0;
+    ones_vector([needNothing; needAdd; needtoCut]) = 0;
     needtoAdd = find(ones_vector == 1);
     numNeedtoAdd = length(needtoAdd);
     if (numNeedtoAdd~=0)

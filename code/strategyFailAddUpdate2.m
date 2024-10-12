@@ -13,7 +13,7 @@ function strategyFailAddUpdate2(currentJRValues, currentAdjMatrix, currentT2GVal
     global strategyPlan
 
     % Find all nodes that failed add [1,-1]
-    failedNodes = find(strategyPlan(:,1) == 1 & strategyPlan(:,2) == -1);
+    failedNodes = find(strategyPlan(:,2) == -1);
     numFailedNodes = length(failedNodes);
     
     % currentNumNeighborTable(failedNodes(i), 4) == 1 if #neighbors <=2;
@@ -26,8 +26,8 @@ function strategyFailAddUpdate2(currentJRValues, currentAdjMatrix, currentT2GVal
             hasNeighbors = ~isempty(neighbors);
             alreadyTransferred = currentT2GValues(node);
 
-            if alreadyTransferred
-                % Already transferred, but still JR < AVEpeer, cut off with the lowest neighbor
+            if alreadyTransferred % Already transformed, has high JR, but cannot add -> cutoff with neighbor who has the lowest JR
+                [idminNeighbor, ] = helperFindLowestJRNeighbor(currentJRValues, neighbors);
                 strategyPlan = helperPlanUpdate(strategyPlan, node, [2, idminNeighbor]);
             elseif ~hasNeighbors
                 % No neighbors, transfer

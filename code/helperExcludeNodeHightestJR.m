@@ -11,7 +11,7 @@ function nodesNotChosen = helperExcludeNodeHightestJR(currentT2G, currentJR, alp
     % Calculate new JR value after adding the chosen node as neighbor
     newJR = (1-alpha)*currentT2G + (currentJR*numNeighbors - (1-alpha)*currentT2G*numNeighbors + maxJR*alpha)/(numNeighbors+1); %!!!!
 
-    if newJR > categoryAverageJR % If new JR value is still greater than category average JR
+    if newJR >= categoryAverageJR % If new JR value is still greater than category average JR
         % Update strategyPlan for the nodes that were not chosen
         nodesNotChosen = setdiff(nodesToConnect, chosenNode);
     else % Otherwise all building new connection fail !!!
