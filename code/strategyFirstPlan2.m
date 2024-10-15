@@ -11,9 +11,9 @@
 % Output: the plan table
 function strategyFirstPlan2(currentJRValues, currentAdjMatrix, currentNumNeighborTable)
 
-    global n supplierRange 
-    global manufacturerRange retailerRange supplierAveJR 
-    global manufacturerAveJR retailerAveJR strategyPlan
+    global n supplierRange manufacturerRange retailerRange 
+    global supplierAveJR manufacturerAveJR retailerAveJR
+    global strategyPlan
 
     % Calculate peer average JR for each category
     supplierAveJR = mean(currentJRValues(supplierRange));

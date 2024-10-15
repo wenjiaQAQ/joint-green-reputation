@@ -7,9 +7,9 @@ function runSimulationStep()
 
     for step = 1:t
         % Get the current T2G and adjMatrix
-        currentT2GValues = dynamicT2GUpdate(:, end);
-        currentJRValues = dynamicJRUpdate(:, end);
-        currentAdjMatrix = adjMatrix(:, :, end);
+        currentT2GValues = dynamicT2GUpdate(:, step);
+        currentJRValues = dynamicJRUpdate(:, step);
+        currentAdjMatrix = adjMatrix(:, :, step);
         
         % currentNumNeighborTable: | type | #upperStreamNei | #lowerStreamNei | <=2 | neighbor | <2 neighbor |
         currentNumNeighborTable = helperCurrentNumNeighborTable(currentAdjMatrix);
@@ -24,13 +24,13 @@ function runSimulationStep()
         strategyFailAddUpdate2(currentJRValues, currentAdjMatrix, currentT2GValues);
 
         % Update T2G based on the strategy plan
-        updateT2G();
+        updateT2G(step, currentT2GValues);
 
         % Update adjacency matrix based on the strategy plan
-        updateAdjacencyMatrix();
+        updateAdjacencyMatrix(step, currentAdjMatrix);
 
         % Update JR based on the new adjacency matrix and T2G values
-        updateJR();
+        updateJR(step, currentT2G, currentAdjMatrix);
 
          % Check changes of T2G and adjMatrix
         if isequal(currentT2GValues, dynamicT2GUpdate(:, end)) && isequal(currentAdjMatrix, adjMatrix(:, :, end))

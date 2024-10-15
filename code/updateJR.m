@@ -1,10 +1,10 @@
-function updateJR()
+function updateJR(step, currentT2G, currentAdjMatrix)
     global dynamicJRUpdate
 
-    newJRValues =  jrCalculate();
+    newJRValues =  jrCalculate(currentT2G, currentAdjMatrix);
 
     % Add new column to update JR
-    dynamicJRUpdate = [dynamicJRUpdate, newJRValues];
+    dynamicJRUpdate(:, step+1) = newJRValues;
     
 %     global adjMatrix dynamicT2GUpdate dynamicJRUpdate n alpha
 % 
