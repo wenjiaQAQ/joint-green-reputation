@@ -28,10 +28,10 @@ function JGRRun(N, T, Alpha, k, numIter, namePara, thre, maxNei)
     
     % global T2GHistory; 
     % Initialize variables
-    n = N;  % {20,500}
+    n = N;
     t = T; % Termination times
-    alpha = Alpha;  % {0.2,0.5,0.7}
-    K = k;  % {0.25,0.5,0.75}
+    alpha = Alpha;
+    K = k;
     maxNeighbor = maxNei;
     threashold = thre;
     numIterations = numIter;  % Number of repetitions for the experiment

@@ -8,6 +8,11 @@ function strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GV
     % Find the current node (focal company that are chosen to be connected)
     currentNodes = unique(strategyPlan((strategyPlan(:,1) == 1),2));
     numCurrentNodes = length(currentNodes);
+    
+    % ini
+    nodesFailtoAdd = [];
+    nodesFailtoAdd2 = [];
+    
     if numCurrentNodes ~= 0
         for i = 1: numCurrentNodes % current Node: currentNodes(i)
             % data of the currentNode currentNodes(i)
@@ -43,7 +48,7 @@ function strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GV
                 end
                 nodesToConnect = setdiff(nodesToConnect, nodesFailtoAdd);
             end
-            if isempty(nodesToConnect)% still have space for new neighbors
+            if ~isempty(nodesToConnect)% still have space for new neighbors
                 if tooLessNeighbors % if the current node has 0 or 1 neighbors, then can accept multiple neighbors
                     nodesFailtoAdd2= helperExcludeNodeHightestJRAppendix(currentNumNeighborTable(currentNodes(i),:), currentT2G, currentJR, alpha, categoryAverageJR, numNeighbors, nodesToConnect, currentJRValues);
                 else% if the current node has >= 2 neighbors, then select the node with the higest JR to connect

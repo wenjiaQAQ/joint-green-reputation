@@ -3,18 +3,19 @@
 function main
     % Pilot experiments setting
     n = 20;
-    alpha = [0.25, 0.5, 0.75];
-    K = [0.25, 0.5, 0.75];
+%     alpha = [0.25, 0.5, 0.75];
+%     K = [0.25, 0.5, 0.75];
+    alpha = 0.25;
+    K = 0.25;
     T = 30;
     numIter = 10;
     thre = 0.05;
     maxNei = 5;
     
-    for i = 1:3
+    for i = 1:length(alpha)
         namePara = helperNameGenerator(n, alpha(i), K(i));
         JGRRun(n, T, alpha(i), K(i), numIter, namePara, thre, maxNei);
     end
-    
 end
 
 % 
