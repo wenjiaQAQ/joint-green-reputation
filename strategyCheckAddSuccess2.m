@@ -1,7 +1,7 @@
 %% This funtion is to check if the generated stratagePlan is successful
 % Aim: Update strategyPlan
 function strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GValues, currentNumNeighborTable)
-    global alpha strategyPlan
+    global alpha strategyPlan maxNeighbor
     global supplierAveJR manufacturerAveJR retailerAveJR supplierRange retailerRange
 
 
@@ -20,7 +20,7 @@ function strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GV
             currentT2G = currentT2GValues(currentNodes(i));
             neighbors = find(currentAdjMatrix(currentNodes(i), :) == 1);
             numNeighbors = length(neighbors);
-            tooManyNeighbors = currentNumNeighborTable(currentNodes(i), 6); % 1 := #neighbor >=5
+            tooManyNeighbors = currentNumNeighborTable(currentNodes(i), 6); % 1 := #neighbor >= maxNeighbor
             tooLessNeighbors = currentNumNeighborTable(currentNodes(i), 5); % 1 := #neighbor < 2
 
             % Determine the category of the current node
@@ -37,7 +37,7 @@ function strategyCheckAddSuccess2(currentJRValues, currentAdjMatrix, currentT2GV
                     numSupplierNeighbors = currentNumNeighborTable(currentNodes(i), 2); 
                     nodesToConnectSupplier = nodesToConnect(nodesToConnect <= supplierRange(end));
                     nodesToConnectRetailer = nodesToConnect(nodesToConnect >= retailerRange(1));
-                    if numSupplierNeighbors >= 5 % have too many supplier neighbors
+                    if numSupplierNeighbors >= maxNeighbor % have too many supplier neighbors
                         % nodesToConnectSupplier fail to add
                         nodesFailtoAdd = nodesToConnectSupplier;
                     else

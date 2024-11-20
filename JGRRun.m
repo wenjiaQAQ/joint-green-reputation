@@ -69,7 +69,8 @@ function JGRRun(N, T, Alpha, k, numIter, namePara, thre, maxNei)
 
 
         % Create initial adjacency matrix (t=0)
-        adjMatrix(:, :, 1) = createAdjacencyMatrix();
+        % adjMatrix(:, :, 1) = createAdjacencyMatrix();
+        adjMatrix(:, :, 1) = createAdjacencyMatrix_ScaleFree();
         
         % Initial value of T2G
         initialT2GValues = zeros(n, 1);
