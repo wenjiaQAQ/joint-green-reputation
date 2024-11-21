@@ -6,14 +6,14 @@ function main
     % T = 20;
     % maxNei = 5;
     n = 100;
-    maxNei = 30;
-    T = 30;
+    maxNei = n;
+    T = 50;
     alpha = [0.25, 0.5, 0.75];
     K = [0.25, 0.5, 0.75];
     % alpha = 0.25;
     % K = 0.25;
     
-    numIter = 30;
+    numIter = 20;
     thre = 0.05;
     
     
