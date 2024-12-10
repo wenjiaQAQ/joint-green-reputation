@@ -89,7 +89,8 @@ average_Time_helper <- function(fileName, T, N){
   time_to_stable <- c(rep(0, repeatTimes))
   
   for (i in 1:repeatTimes){
-    subDataFrame <- myDataframe[((i-1)*T+1):(T*i+1),]
+    # subDataFrame <- myDataframe[((i-1)*T+1):(T*i+1),]
+    subDataFrame <- myDataframe[((i-1)*(T+1)+1):((T+1)*i),]
     row_sum <- rowSums(subDataFrame)
     t_to_stable <- which(row_sum == N)
     if (length(t_to_stable) == 0){ # not reaching the stable state yet
@@ -101,5 +102,5 @@ average_Time_helper <- function(fileName, T, N){
   return(mean(time_to_stable))
 }
 
-
+time_stable_cal(50)
 

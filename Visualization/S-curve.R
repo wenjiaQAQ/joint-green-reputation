@@ -8,6 +8,8 @@ library(latex2exp)
 library(ggplot2)
 library(gridExtra)
 library(readxl)
+library(readr)
+
 
 # library(facetscales)
 library(tidyr)
@@ -121,20 +123,51 @@ T2G_rate_helper <- function(fileName, T, N){
 T2G_rate(50)
 
 ## Step 2: Visualization
-# Step 2.1 read the data as df and Subset k = 0.25
-df_T2G <- read_csv("../Pre-exp/Data/N100/df_T2G.csv")
-df <- df_T2G[df_T2G$k_rep==0.25, ]
-nrow(df)
-colnames(df) <- c("rate", "role", "timeStep", "expID", "alpha", "k")
-colnames(df)
 
-# Step 2.2 calculate the average rate among the 20 groups of exp
-avg_data <- df %>%
-  group_by(timeStep, role, alpha, k) %>%
-  summarize(ave_rate = mean(rate), .groups = "drop")
-View(avg_data)
+df_T2G <- read_csv("df_T2G.csv")
 
-# Step 2.2 plot
+generate_S_Curve <- function(k, df_T2G, x_max, y_min){
+  # Step 2.1 read the data as df and Subset k
+  df <- df_T2G[df_T2G$k_rep==k, ]
+  nrow(df)
+  colnames(df) <- c("rate", "role", "timeStep", "expID", "alpha", "k")
+  
+  # Step 2.2 calculate the average rate among the 20 groups of exp
+  avg_data <- df %>%
+    group_by(timeStep, role, alpha, k) %>%
+    summarize(ave_rate = mean(rate), .groups = "drop")
+  # View(avg_data)
+  
+  # Step 2.2 plot
+  df$alpha <- factor(df$alpha,
+                     levels = c(0.25, 0.5, 0.75),
+                     labels=c('alpha==0.25', 'alpha==0.5', 'alpha==0.75'))
+  avg_data$alpha <- factor(avg_data$alpha,
+                           levels = c(0.25, 0.5, 0.75),
+                           labels=c('alpha==0.25', 'alpha==0.5', 'alpha==0.75'))
+  
+  df$role <- factor(df$role,
+                    levels = c("Supplier", "Manufacturer", "Retailer"))
+  
+  avg_data$role <- factor(avg_data$role,
+                          levels = c("Supplier", "Manufacturer", "Retailer"))
+  
+  my_plot <- ggplot(df, aes(x = timeStep, y = rate)) +
+    geom_line(aes(group = expID), alpha = 0.3) + # Individual curves with transparency
+    geom_line(data = avg_data,
+              aes(x = timeStep, y = ave_rate),
+              color = 'red',
+              size = 1) + # Ave curves thicker
+    xlim(0, x_max)+
+    ylim(y_min, 1)+
+    labs(x = "Time Step", y = "T2G Rate")+
+    facet_grid(alpha ~ role, labeller = label_parsed)
+  
+  fileName <- paste0("S-Curve of Transformation K=", as.character(k), ".pdf")
+  ggsave(fileName, plot = my_plot, height = 4.2, width = 7)
+}
+
+# Helper Function
 alpha_labeller <- function(variable){
   print(variable[[1]])
   if (variable[[1]]==0.25 ||variable[[2]]==0.25 ||variable[[3]]==0.25)
@@ -144,22 +177,7 @@ alpha_labeller <- function(variable){
   return(variable)
 }
 
-df$alpha <- factor(df$alpha,
-                   levels = c(0.25, 0.5, 0.75),
-                   labels=c('alpha==0.25', 'alpha==0.5', 'alpha==0.75'))
-avg_data$alpha <- factor(avg_data$alpha,
-                   levels = c(0.25, 0.5, 0.75),
-                   labels=c('alpha==0.25', 'alpha==0.5', 'alpha==0.75'))
-
-my_plot <- ggplot(df, aes(x = timeStep, y = rate)) +
-  geom_line(aes(group = expID), alpha = 0.3) + # Individual curves with transparency
-  geom_line(data = avg_data,
-            aes(x = timeStep, y = ave_rate),
-            color = 'red',
-            size = 1) + # Ave curves thicker
-  xlim(0, 50)+
-  ylim(0, 1)+
-  labs(x = "Time Step", y = "T2G Rate")+
-  facet_grid(alpha ~ role, labeller = label_parsed)
-
+generate_S_Curve(0.25, df_T2G, 50, 0)
+generate_S_Curve(0.5, df_T2G, 50, 0.25)
+generate_S_Curve(0.75, df_T2G, 50, 0.6)
 
