@@ -1,7 +1,4 @@
-getwd()
-setwd("../Pre-exp/Data/N100")
-
-# Package
+#---------- Load Packages ---------
 library(data.table)
 library(dplyr)
 library(latex2exp)
@@ -9,8 +6,6 @@ library(ggplot2)
 library(gridExtra)
 library(readxl)
 library(readr)
-
-
 # library(facetscales)
 library(tidyr)
 library(scales)
@@ -19,6 +14,57 @@ library(latex2exp)
 library(stringr)
 library(forstringr)
 
+#----------- Find expId that has free-riders -----------
+# Idea: there are free riders in k \in {0.25, 0.5}, and \alpha = 0.25
+#       the feature of free-riding is T2G = 0 in the stable state
+df_T2G <- read_csv("df_T2G.csv")
+colnames(df_T2G) <- c("Rate", "Role", "timeStep", "expId", "Alpha", "K")
+
+maxTimeStep = max(df_T2G$timeStep)
+free_rider_candidate <- df_T2G[df_T2G$timeStep == maxTimeStep,]
+free_rider_candidate_info <- free_rider_candidate[free_rider_candidate$Rate != 1,]
+
+index_all = c()
+for (i in 1:nrow(free_rider_candidate_info)) {
+  
+  index = which(df_T2G$Role == free_rider_candidate_info$Role[i] &
+        df_T2G$expId == free_rider_candidate_info$expId[i] &
+        df_T2G$Alpha == free_rider_candidate_info$Alpha[i] &
+        df_T2G$K == free_rider_candidate_info$K[i]
+          )
+  index = tail(index, 5)
+  if (sum(index_all[,1] == index[1]) == 0) {
+    index_all = rbind(index_all, index)  
+  }
+}
+
+for (i in 1:nrow(free_rider_candidate_info)) {
+  print(free_rider_candidate_info[i,])
+  print(df_T2G[index_all[i,],])
+}
+
+# Rate     Role        timeStep expId Alpha     K
+# 1 0.970 Manufacturer       47     7  0.25   0.5
+# 2 0.970 Manufacturer       48     7  0.25   0.5
+# 3 0.970 Manufacturer       49     7  0.25   0.5
+# 4 0.970 Manufacturer       50     7  0.25   0.5
+# 5 0.970 Manufacturer       51     7  0.25   0.5
+# 
+# Rate     Role    timeStep expId Alpha     K
+# 1 0.909 Supplier       47    15  0.25  0.25
+# 2 0.909 Supplier       48    15  0.25  0.25
+# 3 0.909 Supplier       49    15  0.25  0.25
+# 4 0.909 Supplier       50    15  0.25  0.25
+# 5 0.909 Supplier       51    15  0.25  0.25
+# 
+# Rate     Role       timeStep expId Alpha     K
+# 1 0.909 Manufacturer       47    16   0.5   0.5
+# 2 0.909 Manufacturer       48    16   0.5   0.5
+# 3 0.909 Manufacturer       49    16   0.5   0.5
+# 4 0.939 Manufacturer       50    16   0.5   0.5
+# 5 0.970 Manufacturer       51    16   0.5   0.5
+
+#----------- Visualization ----------
 ## Idea
 # Use heatmap to represent if the focal agent is taking advantage of its neighbor
 # Taking advantage means JR_{i} < JR_{j}, where i is the focal agent
@@ -30,8 +76,8 @@ library(forstringr)
 # 
 # \| focal_id | neighbor_id | Taking advantage | Time_Step |
 
-# ******************************************************
-## Step 1: Data Prepare
+## ---------- Step 1: Data Prepare ---------
+# use the free rider information to construct the file name and read 
 
 
 # Calculate the T2G rate of each category
