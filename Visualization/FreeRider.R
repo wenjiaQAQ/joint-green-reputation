@@ -1,4 +1,15 @@
 #---------- Load Packages ---------
+if (!require("data.table")) install.packages("data.table")
+if (!require("dplyr")) install.packages("dplyr")
+if (!require("latex2exp")) install.packages("latex2exp")
+if (!require("ggplot2")) install.packages("ggplot2")
+if (!require("gridExtra")) install.packages("gridExtra")
+if (!require("readxl")) install.packages("readxl")
+if (!require("tidyr")) install.packages("tidyr")
+if (!require("scales")) install.packages("scales")
+if (!require("patchwork")) install.packages("patchwork")
+if (!require("stringr")) install.packages("stringr")
+if (!require("forstringr")) install.packages("forstringr")
 library(data.table)
 library(dplyr)
 library(latex2exp)
@@ -10,7 +21,6 @@ library(readr)
 library(tidyr)
 library(scales)
 library(patchwork)
-library(latex2exp)
 library(stringr)
 library(forstringr)
 
@@ -43,21 +53,22 @@ for (i in 1:nrow(free_rider_candidate_info)) {
   print(df_T2G[index_all[i,],])
 }
 
-# Rate     Role        timeStep expId Alpha     K
+# Rate     Role        timeStep expId Alpha     K   DONE
 # 1 0.970 Manufacturer       47     7  0.25   0.5
 # 2 0.970 Manufacturer       48     7  0.25   0.5
 # 3 0.970 Manufacturer       49     7  0.25   0.5
 # 4 0.970 Manufacturer       50     7  0.25   0.5
 # 5 0.970 Manufacturer       51     7  0.25   0.5
 # 
-# Rate     Role    timeStep expId Alpha     K
+
+# Rate     Role    timeStep expId Alpha     K        DONE
 # 1 0.909 Supplier       47    15  0.25  0.25
 # 2 0.909 Supplier       48    15  0.25  0.25
 # 3 0.909 Supplier       49    15  0.25  0.25
 # 4 0.909 Supplier       50    15  0.25  0.25
 # 5 0.909 Supplier       51    15  0.25  0.25
 # 
-# Rate     Role       timeStep expId Alpha     K
+# Rate     Role       timeStep expId Alpha     K     DONE
 # 1 0.909 Manufacturer       47    16   0.5   0.5
 # 2 0.909 Manufacturer       48    16   0.5   0.5
 # 3 0.909 Manufacturer       49    16   0.5   0.5
